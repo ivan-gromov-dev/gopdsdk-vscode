@@ -6,6 +6,7 @@
   "publisher": "gopdsdk",
   "license": "MIT",
   "engines": { "vscode": "^1.95.0" },
+  "activationEvents": ["onLanguage:go"],
   "categories": ["Linters", "Programming Languages"],
   "keywords": ["go", "golang", "playdate", "lsp"],
   "main": "./dist/extension.js",
@@ -17,7 +18,7 @@
     "configuration": {
       "title": "gopdsdk",
       "properties": {
-        "gopdsdk.executable": { "type": "string", "default": "gopdsdk", "description": "Executable name on PATH or absolute path." },
+        "gopdsdk.executable": { "type": "string", "default": "", "description": "Optional executable name on PATH or path. When empty, workspace tools and then PATH are searched." },
         "gopdsdk.arguments": { "type": "array", "items": { "type": "string" }, "default": ["lsp"], "description": "Language-server arguments." },
         "gopdsdk.trace.server": { "type": "string", "enum": ["off", "messages", "verbose"], "default": "off", "scope": "window", "description": "LSP traffic trace level." }
       }
@@ -26,6 +27,10 @@
   "scripts": {
     "check": "tsc --noEmit",
     "compile": "esbuild ./src/extension.ts --bundle --platform=node --format=cjs --external:vscode --outfile=dist/extension.js --sourcemap",
+    "test": "npm run check && npm run test:compile && npm run test:unit && npm run test:integration",
+    "test:compile": "tsc -p tsconfig.tests.json",
+    "test:unit": "node --test dist-tests/tests/unit/executable.test.js dist-tests/tests/unit/lifecycle.test.js dist-tests/tests/unit/probe.test.js",
+    "test:integration": "node --test dist-tests/tests/integration/executable.test.js",
     "watch": "npm run compile -- --watch",
     "package": "npm run check && npm run compile && vsce package"
   },

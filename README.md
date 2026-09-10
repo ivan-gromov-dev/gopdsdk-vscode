@@ -12,14 +12,16 @@ remains the single source of truth.
 
 This repository contains the initial TypeScript client scaffold. It starts the
 language server for Go workspaces and provides restart and output commands.
-Executable discovery, compatibility checks, complete configuration, tests, and
-release automation are tracked in [ROADMAP.md](ROADMAP.md).
+Before startup it discovers the executable, performs a bounded LSP handshake,
+and requires analyzer protocol `v1` with diagnostics and safe-fix capabilities.
+Complete analyzer configuration, editor-host tests, and release automation are
+tracked in [ROADMAP.md](ROADMAP.md).
 
 ## Requirements
 
 - Visual Studio Code 1.95 or newer;
-- `gopdsdk` with the `lsp` command on `PATH`, or an explicit
-  `gopdsdk.executable` setting;
+- `gopdsdk` with the `lsp` command in a workspace `tools`/`bin` directory or on
+  `PATH`, or an explicit `gopdsdk.executable` setting;
 - the VS Code Go extension for normal Go language features.
 
 ## Development
@@ -27,6 +29,7 @@ release automation are tracked in [ROADMAP.md](ROADMAP.md).
 ```text
 npm install
 npm run compile
+npm test
 ```
 
 Open this repository in VS Code and press `F5`. In the Extension Development
@@ -40,11 +43,17 @@ Commands:
 
 Build a local VSIX with `npm run package`.
 
+Unit tests live under `tests/unit`. Process-integration tests under
+`tests/integration` exercise executable discovery against the real filesystem
+on Windows, macOS, and Linux in CI. Extension Host coverage remains part of the
+diagnostic UX milestone because it requires a real VS Code instance and LSP
+fixture.
+
 ## Configuration
 
 | Setting | Default | Meaning |
 | --- | --- | --- |
-| `gopdsdk.executable` | `gopdsdk` | Executable name or absolute path. |
+| `gopdsdk.executable` | empty | Optional executable name on `PATH` or path. An empty value searches each workspace's `tools` and `bin` directories, then `PATH`. |
 | `gopdsdk.arguments` | `["lsp"]` | Language-server arguments. |
 | `gopdsdk.trace.server` | `off` | LSP traffic trace level. |
 

@@ -14,12 +14,17 @@ Status: complete; dependency installation and build verification remain.
 
 ## M1 — Executable contract
 
-- discover the executable from an explicit setting, workspace tools, then PATH;
-- probe version and LSP capabilities before startup;
-- explain missing or incompatible binaries;
-- restart cleanly after configuration changes and redact sensitive logs.
+Status: complete; cross-platform CI verification remains.
+
+- [x] discover the executable from an explicit setting, workspace tools, then PATH;
+- [x] probe version and LSP capabilities before startup;
+- [x] explain missing or incompatible binaries;
+- [x] restart cleanly after configuration changes and redact sensitive logs.
 
 Verification: unit and process tests on Windows, macOS, and Linux.
+
+CI runs the build plus both test levels on their applicable platform matrix;
+the required `CI Success` job passes only when every preceding job passes.
 
 ## M2 — Analyzer configuration
 
