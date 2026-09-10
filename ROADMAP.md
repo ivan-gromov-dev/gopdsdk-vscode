@@ -40,13 +40,21 @@ Verification: diagnostic parity with equivalent `gopdsdk check` runs.
 
 ## M3 — Diagnostic UX
 
-- validate push/pull diagnostics, related locations, and rule help;
-- preview and apply only analyzer-provided safe fixes;
-- add refresh, restart, and troubleshooting actions;
-- verify graceful coexistence with `gopls`.
+Status: complete; cross-platform CI confirmation remains.
+
+- [x] validate push/pull diagnostics, related locations, and rule help;
+- [x] preview and apply only analyzer-provided safe fixes;
+- [x] add refresh, restart, and troubleshooting actions;
+- [x] verify graceful coexistence with `gopls`.
 
 Verification: Extension Host tests for edit/save/close, stale versions,
 clearing, cancellation, quick fixes, and multi-root workspaces.
+
+The client relies on standard LSP cancellation and document lifecycle handling,
+clears its diagnostic collection when VS Code closes a document, and owns no Go
+language features. The Extension Host fixture covers multi-root push/pull
+diagnostics, related locations, versioned rule help, stale-version rejection,
+safe-edit application, and command registration beside any other Go provider.
 
 ## M4 — Reliability
 

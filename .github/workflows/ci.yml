@@ -57,10 +57,22 @@ jobs:
       - run: npm run test:compile
       - run: npm run test:integration
 
+  extension-host:
+    name: Extension Host tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: xvfb-run -a npm run test:extension
+
   ci-success:
     name: CI Success
     if: ${{ always() }}
-    needs: [build, unit-tests, integration-tests]
+    needs: [build, unit-tests, integration-tests, extension-host]
     runs-on: ubuntu-latest
     steps:
       - name: Require every CI job to pass
@@ -68,7 +80,9 @@ jobs:
           BUILD_RESULT: ${{ needs.build.result }}
           UNIT_RESULT: ${{ needs.unit-tests.result }}
           INTEGRATION_RESULT: ${{ needs.integration-tests.result }}
+          EXTENSION_HOST_RESULT: ${{ needs.extension-host.result }}
         run: |
           test "$BUILD_RESULT" = success
           test "$UNIT_RESULT" = success
           test "$INTEGRATION_RESULT" = success
+          test "$EXTENSION_HOST_RESULT" = success
