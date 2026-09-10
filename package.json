@@ -1,0 +1,40 @@
+{
+  "name": "gopdsdk",
+  "displayName": "gopdsdk",
+  "description": "Playdate diagnostics and safe fixes powered by gopdsdk.",
+  "version": "0.1.0",
+  "publisher": "gopdsdk",
+  "license": "MIT",
+  "engines": { "vscode": "^1.95.0" },
+  "categories": ["Linters", "Programming Languages"],
+  "keywords": ["go", "golang", "playdate", "lsp"],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "commands": [
+      { "command": "gopdsdk.restartServer", "title": "Restart Language Server", "category": "gopdsdk" },
+      { "command": "gopdsdk.showOutput", "title": "Show Language Server Output", "category": "gopdsdk" }
+    ],
+    "configuration": {
+      "title": "gopdsdk",
+      "properties": {
+        "gopdsdk.executable": { "type": "string", "default": "gopdsdk", "description": "Executable name on PATH or absolute path." },
+        "gopdsdk.arguments": { "type": "array", "items": { "type": "string" }, "default": ["lsp"], "description": "Language-server arguments." },
+        "gopdsdk.trace.server": { "type": "string", "enum": ["off", "messages", "verbose"], "default": "off", "scope": "window", "description": "LSP traffic trace level." }
+      }
+    }
+  },
+  "scripts": {
+    "check": "tsc --noEmit",
+    "compile": "esbuild ./src/extension.ts --bundle --platform=node --format=cjs --external:vscode --outfile=dist/extension.js --sourcemap",
+    "watch": "npm run compile -- --watch",
+    "package": "npm run check && npm run compile && vsce package"
+  },
+  "dependencies": { "vscode-languageclient": "^9.0.1" },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "@types/vscode": "^1.95.0",
+    "@vscode/vsce": "^3.2.1",
+    "esbuild": "^0.24.2",
+    "typescript": "^5.7.2"
+  }
+}

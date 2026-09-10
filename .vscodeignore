@@ -1,0 +1,9 @@
+.git/**
+.github/**
+.vscode/**
+src/**
+node_modules/.cache/**
+tsconfig.json
+ROADMAP.md
+*.vsix
+*.log
