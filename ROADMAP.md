@@ -28,10 +28,13 @@ the required `CI Success` job passes only when every preceding job passes.
 
 ## M2 — Analyzer configuration
 
-- expose target, SDK floor, rules/categories, severity, baseline, changed-file
+Status: complete; diagnostic parity depends on the selected server honoring the
+corresponding analyzer-protocol fields.
+
+- [x] expose target, SDK floor, rules/categories, severity, baseline, changed-file
   mode, and explicit deep-analysis opt-in;
-- support folder-specific settings in multi-root workspaces;
-- update configuration without restart when supported.
+- [x] support folder-specific settings in multi-root workspaces;
+- [x] update configuration without restart when supported.
 
 Verification: diagnostic parity with equivalent `gopdsdk check` runs.
 

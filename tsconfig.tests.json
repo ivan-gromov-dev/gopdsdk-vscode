@@ -4,5 +4,5 @@
     "rootDir": ".",
     "outDir": "dist-tests"
   },
-  "include": ["src/executable.ts", "src/lifecycle.ts", "src/probe.ts", "tests/**/*.ts"]
+  "include": ["src/configuration.ts", "src/executable.ts", "src/lifecycle.ts", "src/probe.ts", "tests/**/*.ts"]
 }
