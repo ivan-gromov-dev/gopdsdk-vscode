@@ -27,6 +27,18 @@ function initializeResult() {
   return result;
 }
 
+function diagnostic(uri, version) {
+  return {
+    uri, version, diagnostics: [{
+      range: { start: { line: 1, character: 0 }, end: { line: 1, character: 2 } },
+      severity: 2, code: "fixture-rule", codeDescription: { href: "https://example.invalid/rules/fixture-rule" },
+      source: "gopdsdk", message: `fixture diagnostic${version === undefined ? "" : ` v${version}`}`,
+      relatedInformation: [{ location: { uri, range: { start: { line: 0, character: 0 }, end: { line: 0, character: 7 } } }, message: "related declaration" }],
+      data: { rule: "fixture-rule", target: "device" },
+    }],
+  };
+}
+
 process.stdin.on("data", (chunk) => {
   if (scenario === "timeout") return;
   input = Buffer.concat([input, chunk]);
@@ -45,6 +57,29 @@ process.stdin.on("data", (chunk) => {
       else send({ jsonrpc: "2.0", id: message.id, result: initializeResult() });
     } else if (message.method === "shutdown") {
       send({ jsonrpc: "2.0", id: message.id, result: null });
+    } else if (scenario === "diagnostic-ux" && message.method === "textDocument/didOpen") {
+      const document = message.params.textDocument;
+      send({ jsonrpc: "2.0", method: "textDocument/publishDiagnostics", params: diagnostic(document.uri, document.version) });
+    } else if (scenario === "diagnostic-ux" && message.method === "textDocument/didChange") {
+      const document = message.params.textDocument;
+      send({ jsonrpc: "2.0", method: "textDocument/publishDiagnostics", params: diagnostic(document.uri, document.version) });
+      if (document.version > 1) setTimeout(() => {
+        send({ jsonrpc: "2.0", method: "textDocument/publishDiagnostics", params: diagnostic(document.uri, document.version - 1) });
+      }, 75);
+    } else if (scenario === "diagnostic-ux" && message.method === "textDocument/didClose") {
+      send({ jsonrpc: "2.0", method: "textDocument/publishDiagnostics", params: { uri: message.params.textDocument.uri, diagnostics: [] } });
+    } else if (scenario === "diagnostic-ux" && message.method === "textDocument/diagnostic") {
+      send({ jsonrpc: "2.0", id: message.id, result: { kind: "full", items: diagnostic(message.params.textDocument.uri).diagnostics } });
+    } else if (scenario === "diagnostic-ux" && message.method === "textDocument/codeAction") {
+      const uri = message.params.textDocument.uri;
+      const sourceDiagnostic = diagnostic(uri).diagnostics[0];
+      send({ jsonrpc: "2.0", id: message.id, result: [
+        { title: "Apply analyzer safe fix", kind: "quickfix", diagnostics: [sourceDiagnostic], edit: { changes: { [uri]: [{ range: { start: { line: 1, character: 0 }, end: { line: 1, character: 2 } }, newText: "var fixed = true" }] } } },
+        { title: "Unsafe command", kind: "quickfix", diagnostics: [sourceDiagnostic], command: { title: "unsafe", command: "fixture.unsafe" } },
+        { title: "Unrelated refactor", kind: "refactor", edit: { changes: {} } },
+      ] });
+    } else if (scenario === "diagnostic-ux" && message.method === "gopdsdk/ruleHelp") {
+      send({ jsonrpc: "2.0", id: message.id, result: { rule: { id: "fixture-rule", family: "fixture", summary: "fixture summary", defaultSeverity: "warning", confidence: "proven", safeFixPolicy: "replace fixture safely" }, documentation: "https://example.invalid/rules/fixture-rule" } });
     } else if (message.method === "exit") {
       process.exit(0);
     }

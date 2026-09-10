@@ -10,12 +10,14 @@ remains the single source of truth.
 
 ## Status
 
-This repository contains the initial TypeScript client scaffold. It starts the
-language server for Go workspaces and provides restart and output commands.
+This repository contains the TypeScript client. It starts the language server
+for Go workspaces and provides diagnostic refresh, restart, rule-help,
+troubleshooting, and output commands.
 Before startup it discovers the executable, performs a bounded LSP handshake,
 and requires analyzer protocol `v1` with diagnostics and safe-fix capabilities.
-Editor-host tests and release automation are
-tracked in [ROADMAP.md](ROADMAP.md).
+Analyzer-provided edit-only quick fixes are accepted; command-based or unrelated
+actions are rejected by the client. Release automation is tracked in
+[ROADMAP.md](ROADMAP.md).
 
 ## Requirements
 
@@ -39,15 +41,18 @@ the **gopdsdk** output channel.
 Commands:
 
 - `gopdsdk: Restart Language Server`
+- `gopdsdk: Refresh Diagnostics`
+- `gopdsdk: Show Rule Help`
+- `gopdsdk: Troubleshoot`
 - `gopdsdk: Show Language Server Output`
 
 Build a local VSIX with `npm run package`.
 
 Unit tests live under `tests/unit`. Process-integration tests under
 `tests/integration` exercise executable discovery against the real filesystem
-on Windows, macOS, and Linux in CI. Extension Host coverage remains part of the
-diagnostic UX milestone because it requires a real VS Code instance and LSP
-fixture.
+on Windows, macOS, and Linux in CI. Extension Host coverage uses a real VS Code
+instance and deterministic LSP fixture for multi-root diagnostics, related
+locations, rule help, stale versions, and safe quick fixes.
 
 ## Configuration
 

@@ -1,6 +1,7 @@
 import * as vscode from "vscode";
 import { DidChangeConfigurationNotification, LanguageClient, LanguageClientOptions, ServerOptions, Trace } from "vscode-languageclient/node";
 import { analyzerConfigurationChanged, analyzerSettings } from "./configuration";
+import { analyzerRule, isAnalyzerSafeFix, ruleHelpMarkdown } from "./diagnostics";
 import { discoverExecutable, ExecutableNotFoundError } from "./executable";
 import { SerialTaskQueue } from "./lifecycle";
 import { probeServer, ServerProbeError } from "./probe";
@@ -43,6 +44,12 @@ async function createClient(folder: vscode.WorkspaceFolder | undefined): Promise
       fileEvents: fileWatcher,
     },
     outputChannel: output,
+    middleware: {
+      provideCodeActions: async (document, range, actionContext, token, next) => {
+        const actions = await next(document, range, actionContext, token);
+        return actions?.filter((action) => "edit" in action && isAnalyzerSafeFix(action)) ?? [];
+      },
+    },
   };
   const suffix = folder ? ` (${folder.name})` : "";
   const next = new LanguageClient(`gopdsdk-${folder?.index ?? "untitled"}`, `gopdsdk Language Server${suffix}`, server, options);
@@ -105,12 +112,70 @@ async function restartClient(): Promise<void> {
   await startClient();
 }
 
+async function refreshDiagnostics(): Promise<void> {
+  await updateAnalyzerConfiguration();
+  await vscode.commands.executeCommand("workbench.action.problems.focus");
+}
+
+function clientFor(uri: vscode.Uri | undefined): LanguageClient | undefined {
+  const folder = uri ? vscode.workspace.getWorkspaceFolder(uri) : undefined;
+  return clients.get(clientKey(folder)) ?? clients.get(clientKey(undefined));
+}
+
+async function selectRule(argument: unknown): Promise<{ rule: string; uri?: vscode.Uri } | undefined> {
+  if (typeof argument === "object" && argument !== null && "source" in argument) {
+    const diagnostic = argument as vscode.Diagnostic;
+    const rule = analyzerRule(diagnostic);
+    if (rule) return { rule, uri: vscode.window.activeTextEditor?.document.uri };
+  }
+  if (typeof argument === "string" && argument.length > 0) return { rule: argument, uri: vscode.window.activeTextEditor?.document.uri };
+  const items = vscode.languages.getDiagnostics()
+    .flatMap(([uri, diagnostics]) => diagnostics.map((diagnostic) => ({ uri, diagnostic, rule: analyzerRule(diagnostic) })))
+    .filter((item): item is { uri: vscode.Uri; diagnostic: vscode.Diagnostic; rule: string } => item.rule !== undefined)
+    .map((item) => ({ label: item.rule, description: item.diagnostic.message, uri: item.uri }));
+  const selected = await vscode.window.showQuickPick(items, { placeHolder: "Select a gopdsdk diagnostic rule" });
+  return selected ? { rule: selected.label, uri: selected.uri } : undefined;
+}
+
+async function showRuleHelp(argument?: unknown): Promise<void> {
+  const selection = await selectRule(argument);
+  if (!selection) return;
+  const client = clientFor(selection.uri);
+  if (!client) {
+    void vscode.window.showWarningMessage("The gopdsdk language server is not running.");
+    return;
+  }
+  try {
+    const markdown = ruleHelpMarkdown(await client.sendRequest("gopdsdk/ruleHelp", { rule: selection.rule }));
+    if (!markdown) throw new Error("invalid response");
+    const document = await vscode.workspace.openTextDocument({ language: "markdown", content: markdown });
+    await vscode.window.showTextDocument(document, { preview: true });
+  } catch {
+    output?.appendLine(`Rule help failed for ${selection.rule}.`);
+    void vscode.window.showErrorMessage(`Could not load help for gopdsdk rule ${selection.rule}.`, "Show Output")
+      .then((choice) => { if (choice === "Show Output") output?.show(); });
+  }
+}
+
+async function troubleshoot(): Promise<void> {
+  const choice = await vscode.window.showInformationMessage(
+    "Use the gopdsdk output for redacted startup and analyzer events, or restart after updating the executable.",
+    "Show Output", "Restart Server", "Open Settings",
+  );
+  if (choice === "Show Output") output?.show();
+  if (choice === "Restart Server") await scheduleLifecycle(restartClient);
+  if (choice === "Open Settings") await vscode.commands.executeCommand("workbench.action.openSettings", "@ext:gopdsdk.gopdsdk");
+}
+
 export async function activate(context: vscode.ExtensionContext): Promise<void> {
   output = vscode.window.createOutputChannel("gopdsdk", { log: true });
   fileWatcher = vscode.workspace.createFileSystemWatcher("**/{go.mod,pdxinfo}");
   context.subscriptions.push(output, fileWatcher);
   context.subscriptions.push(
     vscode.commands.registerCommand("gopdsdk.restartServer", () => scheduleLifecycle(restartClient)),
+    vscode.commands.registerCommand("gopdsdk.refreshDiagnostics", () => scheduleLifecycle(refreshDiagnostics)),
+    vscode.commands.registerCommand("gopdsdk.showRuleHelp", showRuleHelp),
+    vscode.commands.registerCommand("gopdsdk.troubleshoot", troubleshoot),
     vscode.commands.registerCommand("gopdsdk.showOutput", () => output?.show()),
     vscode.workspace.onDidChangeConfiguration(async (event) => {
       if (event.affectsConfiguration("gopdsdk.executable") || event.affectsConfiguration("gopdsdk.arguments")) {
@@ -120,6 +185,9 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
       }
     }),
     vscode.workspace.onDidChangeWorkspaceFolders(() => scheduleLifecycle(restartClient)),
+    vscode.workspace.onDidCloseTextDocument((document) => {
+      for (const client of clients.values()) client.diagnostics?.delete(document.uri);
+    }),
   );
   await scheduleLifecycle(startClient);
 }
