@@ -14,7 +14,7 @@ This repository contains the initial TypeScript client scaffold. It starts the
 language server for Go workspaces and provides restart and output commands.
 Before startup it discovers the executable, performs a bounded LSP handshake,
 and requires analyzer protocol `v1` with diagnostics and safe-fix capabilities.
-Complete analyzer configuration, editor-host tests, and release automation are
+Editor-host tests and release automation are
 tracked in [ROADMAP.md](ROADMAP.md).
 
 ## Requirements
@@ -55,7 +55,21 @@ fixture.
 | --- | --- | --- |
 | `gopdsdk.executable` | empty | Optional executable name on `PATH` or path. An empty value searches each workspace's `tools` and `bin` directories, then `PATH`. |
 | `gopdsdk.arguments` | `["lsp"]` | Language-server arguments. |
+| `gopdsdk.target` | `both` | Analysis target for the workspace folder. |
+| `gopdsdk.gopdsdkFloor` | empty | Oldest supported gopdsdk release. |
+| `gopdsdk.playdateSDK` | empty | Official Playdate SDK compatibility version. |
+| `gopdsdk.rules` / `gopdsdk.categories` | `[]` | Optional rule or category selection. |
+| `gopdsdk.excludeRules` | `[]` | Rules excluded from analysis. |
+| `gopdsdk.severities` | `{}` | Severity overrides keyed by rule or category. |
+| `gopdsdk.baseline` | empty | Workspace-relative adoption baseline path. |
+| `gopdsdk.changedFiles` | `[]` | Workspace-relative changed files; empty analyzes all files. |
+| `gopdsdk.deep` | `false` | Explicitly enable higher-cost deep analysis. |
 | `gopdsdk.trace.server` | `off` | LSP traffic trace level. |
+
+Analyzer settings have resource scope, so each folder in a multi-root workspace
+gets an independent language-server client. Changes are sent with
+`workspace/didChangeConfiguration`; executable and argument changes still
+restart the affected clients.
 
 ## Architecture
 

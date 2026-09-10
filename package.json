@@ -20,6 +20,16 @@
       "properties": {
         "gopdsdk.executable": { "type": "string", "default": "", "description": "Optional executable name on PATH or path. When empty, workspace tools and then PATH are searched." },
         "gopdsdk.arguments": { "type": "array", "items": { "type": "string" }, "default": ["lsp"], "description": "Language-server arguments." },
+        "gopdsdk.target": { "type": "string", "enum": ["shared", "simulator", "device", "both"], "default": "both", "scope": "resource", "description": "Analyzer target for this workspace folder." },
+        "gopdsdk.gopdsdkFloor": { "type": "string", "default": "", "scope": "resource", "description": "Oldest supported gopdsdk release, such as v1.2.3. Empty uses repository configuration." },
+        "gopdsdk.playdateSDK": { "type": "string", "default": "", "scope": "resource", "description": "Official Playdate SDK compatibility version, such as 3.1.1. Empty uses repository configuration." },
+        "gopdsdk.rules": { "type": "array", "items": { "type": "string" }, "uniqueItems": true, "default": [], "scope": "resource", "description": "Optional rule selection. Empty uses the analyzer default." },
+        "gopdsdk.categories": { "type": "array", "items": { "type": "string" }, "uniqueItems": true, "default": [], "scope": "resource", "description": "Optional analyzer category selection." },
+        "gopdsdk.excludeRules": { "type": "array", "items": { "type": "string" }, "uniqueItems": true, "default": [], "scope": "resource", "description": "Rules excluded from analysis." },
+        "gopdsdk.severities": { "type": "object", "additionalProperties": { "type": "string", "enum": ["error", "warning", "performance", "information"] }, "default": {}, "scope": "resource", "description": "Severity overrides keyed by rule or category selector." },
+        "gopdsdk.baseline": { "type": "string", "default": "", "scope": "resource", "description": "Workspace-relative adoption baseline path. Empty disables baseline filtering." },
+        "gopdsdk.changedFiles": { "type": "array", "items": { "type": "string" }, "uniqueItems": true, "default": [], "scope": "resource", "description": "Optional workspace-relative changed-file selection. Empty analyzes all files." },
+        "gopdsdk.deep": { "type": "boolean", "default": false, "scope": "resource", "description": "Explicitly enable deep analysis. This may increase analysis latency." },
         "gopdsdk.trace.server": { "type": "string", "enum": ["off", "messages", "verbose"], "default": "off", "scope": "window", "description": "LSP traffic trace level." }
       }
     }
@@ -29,7 +39,7 @@
     "compile": "esbuild ./src/extension.ts --bundle --platform=node --format=cjs --external:vscode --outfile=dist/extension.js --sourcemap",
     "test": "npm run check && npm run test:compile && npm run test:unit && npm run test:integration",
     "test:compile": "tsc -p tsconfig.tests.json",
-    "test:unit": "node --test dist-tests/tests/unit/executable.test.js dist-tests/tests/unit/lifecycle.test.js dist-tests/tests/unit/probe.test.js",
+    "test:unit": "node --test dist-tests/tests/unit/*.test.js",
     "test:integration": "node --test dist-tests/tests/integration/executable.test.js",
     "watch": "npm run compile -- --watch",
     "package": "npm run check && npm run compile && vsce package"
