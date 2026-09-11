@@ -2,7 +2,7 @@
   "name": "gopdsdk",
   "displayName": "gopdsdk",
   "description": "Playdate diagnostics and safe fixes powered by gopdsdk.",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "publisher": "gopdsdk",
   "license": "SEE LICENSE IN LICENSE",
   "icon": "assets/icon.png",
@@ -86,14 +86,13 @@
         "gopdsdk.target": {
           "type": "string",
           "enum": [
-            "shared",
             "simulator",
             "device",
             "both"
           ],
           "default": "both",
           "scope": "resource",
-          "description": "Analyzer target for this workspace folder."
+          "description": "Platform analysis target for this workspace folder. Shared SDK-contract analysis is always enabled."
         },
         "gopdsdk.gopdsdkFloor": {
           "type": "string",

@@ -4,7 +4,12 @@ All notable changes to the gopdsdk Visual Studio Code extension are documented
 here. The project uses distinct patch versions for Marketplace pre-release and
 stable builds because the Marketplace does not accept SemVer pre-release labels.
 
-## 0.1.0 — Unreleased
+## Unreleased
+
+- always run shared SDK-contract diagnostics and expose only `simulator`,
+  `device`, and `both` as configurable platform targets;
+
+## 0.1.0 — 2026-09-11
 
 - discover and compatibility-probe `gopdsdk lsp` per workspace folder;
 - configure analyzer targets, compatibility floors, rule selection, baselines,
