@@ -2,7 +2,7 @@
   "name": "gopdsdk",
   "displayName": "gopdsdk",
   "description": "Playdate diagnostics and safe fixes powered by gopdsdk.",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "publisher": "gopdsdk",
   "license": "SEE LICENSE IN LICENSE",
   "icon": "assets/icon.png",
