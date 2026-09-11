@@ -27,8 +27,8 @@ jobs:
     outputs:
       vsix: ${{ steps.names.outputs.vsix }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
         with:
           node-version: 22
           cache: npm
@@ -47,14 +47,14 @@ jobs:
         run: echo "vsix=gopdsdk-${{ github.run_id }}.vsix" >> "$GITHUB_OUTPUT"
       - name: Generate SPDX SBOM
         run: npm sbom --sbom-format spdx > sbom.spdx.json
-      - uses: actions/attest-build-provenance@v3
+      - uses: actions/attest-build-provenance@v4
         with:
           subject-path: gopdsdk-${{ github.run_id }}.vsix
       - uses: actions/attest@v4
         with:
           subject-path: gopdsdk-${{ github.run_id }}.vsix
           sbom-path: sbom.spdx.json
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: gopdsdk-vsix-${{ github.run_id }}
           path: |
@@ -68,13 +68,13 @@ jobs:
     runs-on: ubuntu-latest
     environment: vscode-marketplace
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
         with:
           node-version: 22
           cache: npm
       - run: npm ci
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           name: gopdsdk-vsix-${{ github.run_id }}
       - name: Validate release channel
