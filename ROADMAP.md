@@ -83,7 +83,7 @@ Marketplace publication require external release evidence.
 
 - [x] icon, changelog, privacy, security, support, and release policies;
 - [x] signed CI provenance, dependency review, SBOM, and minimal VSIX artifacts;
-- [x] guarded pre-release and stable Marketplace publication workflow;
+- [x] guarded pre-release and stable Marketplace packaging workflow;
 - [x] install, upgrade, downgrade, and uninstall checks plus minimum/current VS
   Code and analyzer-protocol compatibility matrices;
 - [ ] capture real product screenshots and complete reviewed pre-release, then
@@ -91,8 +91,8 @@ Marketplace publication require external release evidence.
 
 The 256×256 Marketplace icon is a mechanically resized copy of the canonical
 gopdsdk logo. Synthetic UI is not accepted as product evidence. Publishing
-remains an explicit operation gated by the `vscode-marketplace` environment and
-a distinct version/channel validation step.
+remains an explicit manual operation after a distinct version/channel validation
+step; CI contains no Marketplace credential.
 
 Exit criterion: VS Code, GoLand, and CLI expose equivalent rule identifiers,
 diagnostics, and safe fixes without analysis rules in editor clients.
