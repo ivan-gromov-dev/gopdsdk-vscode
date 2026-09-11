@@ -86,14 +86,13 @@
         "gopdsdk.target": {
           "type": "string",
           "enum": [
-            "shared",
             "simulator",
             "device",
             "both"
           ],
           "default": "both",
           "scope": "resource",
-          "description": "Analyzer target for this workspace folder."
+          "description": "Platform analysis target for this workspace folder. Shared SDK-contract analysis is always enabled."
         },
         "gopdsdk.gopdsdkFloor": {
           "type": "string",
