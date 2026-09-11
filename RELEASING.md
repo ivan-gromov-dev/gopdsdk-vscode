@@ -26,11 +26,14 @@ publication is approved and verified.
 
 ## Publication
 
-Run the `Package and publish` workflow manually with `pre-release` first. The
-`vscode-marketplace` environment must require review and contain `VSCE_PAT`.
+Run the `Package Marketplace VSIX` workflow manually with `pre-release` first.
+Download the resulting `gopdsdk-pre-release-<run-id>` artifact, verify its
+attestations and SBOM, then upload the VSIX through the publisher management
+page. CI never holds Marketplace credentials and never publishes automatically.
+
 After Marketplace installation and upgrade checks succeed, increment to a
-distinct stable version, set `preview` to `false`, repeat every gate, and run the
-workflow with `stable`.
+distinct stable version, set `preview` to `false`, repeat every gate, run the
+workflow with `stable`, and manually upload that stable VSIX.
 
 Record the Marketplace URL, immutable commit, VSIX SHA-256, CI run, attestation,
 tested VS Code and `gopdsdk` versions, and platform-specific manual smoke results
