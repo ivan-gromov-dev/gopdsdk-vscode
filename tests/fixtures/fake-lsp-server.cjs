@@ -6,6 +6,7 @@ const scenario = process.argv[2] || "valid";
 const reliabilityLog = process.argv[3];
 const crashMarker = process.argv[4];
 let changeCount = 0;
+let crashTimer;
 
 function record(event, fields = {}) {
   if (!reliabilityLog) return;
@@ -80,9 +81,15 @@ process.stdin.on("data", (chunk) => {
       const document = message.params.textDocument;
       changeCount++;
       if (scenario === "reliability" && changeCount === 1 && crashMarker && !fs.existsSync(crashMarker)) {
-        fs.writeFileSync(crashMarker, "crashed\n");
-        record("crash", { version: document.version });
-        process.exit(71);
+        record("crash-scheduled", { version: document.version });
+      }
+      if (scenario === "reliability" && crashMarker && !fs.existsSync(crashMarker)) {
+        if (crashTimer !== undefined) clearTimeout(crashTimer);
+        crashTimer = setTimeout(() => {
+          fs.writeFileSync(crashMarker, "crashed\n");
+          record("crash", { version: document.version });
+          process.exit(71);
+        }, 500);
       }
       publish(document);
       if (document.version > 1) setTimeout(() => {

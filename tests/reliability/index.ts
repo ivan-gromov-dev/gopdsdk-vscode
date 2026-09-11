@@ -18,6 +18,13 @@ function diagnosticVersion(uri: vscode.Uri): number | undefined {
   return match ? Number(match[1]) : undefined;
 }
 
+function reliabilityEvents(): Array<{ event: string }> {
+  const logPath = process.env.GOPDSDK_STRESS_LOG;
+  if (!logPath || !fs.existsSync(logPath)) return [];
+  return fs.readFileSync(logPath, "utf8").trim().split("\n").filter(Boolean)
+    .map((line) => JSON.parse(line) as { event: string });
+}
+
 export async function run(): Promise<void> {
   const started = performance.now();
   const baselineRSS = process.memoryUsage().rss;
@@ -36,7 +43,21 @@ export async function run(): Promise<void> {
   for (let index = 0; index < 40; index++) {
     assert.ok(await editor.edit((builder) => builder.insert(new vscode.Position(0, 0), `// edit ${index}\n`)));
   }
+  await eventually(
+    () => reliabilityEvents().some((event) => event.event === "crash") ? true : undefined,
+    "fixture server did not crash after rapid edits",
+  );
+  await eventually(
+    () => {
+      const events = reliabilityEvents();
+      const crash = events.findIndex((event) => event.event === "crash");
+      return crash >= 0 && events.slice(crash + 1).some((event) => event.event === "initialize") ? true : undefined;
+    },
+    "language client did not restart after the forced server crash",
+  );
   const incrementalStarted = performance.now();
+  const recoveredEditor = await vscode.window.showTextDocument(document);
+  assert.ok(await recoveredEditor.edit((builder) => builder.insert(new vscode.Position(0, 0), "// recovery edit\n")));
   const recoveredVersion = await eventually(
     () => {
       const version = diagnosticVersion(document.uri);
@@ -67,7 +88,7 @@ export async function run(): Promise<void> {
   assert.ok(rssGrowthBytes < 256 * 1024 * 1024, `RSS grew by ${(rssGrowthBytes / 1024 / 1024).toFixed(1)} MiB`);
   const logPath = process.env.GOPDSDK_STRESS_LOG;
   assert.ok(logPath && fs.existsSync(logPath), "server event log exists");
-  const events = fs.readFileSync(logPath, "utf8").trim().split("\n").filter(Boolean).map((line) => JSON.parse(line) as { event: string });
+  const events = reliabilityEvents();
   assert.ok(events.some((event) => event.event === "crash"), "fixture server crash was exercised");
   assert.ok(events.filter((event) => event.event === "initialize").length >= 8, "server reloads were exercised");
 
