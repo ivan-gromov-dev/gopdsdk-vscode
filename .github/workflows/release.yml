@@ -1,0 +1,91 @@
+name: Package and publish
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      channel:
+        description: Marketplace channel
+        required: true
+        default: package-only
+        type: choice
+        options:
+          - package-only
+          - pre-release
+          - stable
+
+permissions:
+  contents: read
+  id-token: write
+  attestations: write
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    outputs:
+      vsix: ${{ steps.names.outputs.vsix }}
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - run: xvfb-run -a npm run test:extension
+      - run: xvfb-run -a npm run test:reliability
+      - name: Package VSIX
+        run: npm run package -- --out gopdsdk-${{ github.run_id }}.vsix
+      - name: Package previous-version fixture
+        run: npx vsce package 0.0.1 --no-dependencies --no-update-package-json --out gopdsdk-previous.vsix
+      - name: Verify install, upgrade, downgrade, and uninstall
+        run: npm run test:install -- gopdsdk-previous.vsix gopdsdk-${{ github.run_id }}.vsix
+      - name: Record artifact name
+        id: names
+        run: echo "vsix=gopdsdk-${{ github.run_id }}.vsix" >> "$GITHUB_OUTPUT"
+      - name: Generate SPDX SBOM
+        run: npm sbom --sbom-format spdx > sbom.spdx.json
+      - uses: actions/attest-build-provenance@v4
+        with:
+          subject-path: gopdsdk-${{ github.run_id }}.vsix
+      - uses: actions/attest@v4
+        with:
+          subject-path: gopdsdk-${{ github.run_id }}.vsix
+          sbom-path: sbom.spdx.json
+      - uses: actions/upload-artifact@v7
+        with:
+          name: gopdsdk-vsix-${{ github.run_id }}
+          path: |
+            gopdsdk-${{ github.run_id }}.vsix
+            sbom.spdx.json
+          if-no-files-found: error
+
+  publish:
+    if: github.event_name == 'workflow_dispatch' && inputs.channel != 'package-only'
+    needs: package
+    runs-on: ubuntu-latest
+    environment: vscode-marketplace
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - uses: actions/download-artifact@v8
+        with:
+          name: gopdsdk-vsix-${{ github.run_id }}
+      - name: Validate release channel
+        run: node scripts/validate-release.cjs "${{ inputs.channel }}"
+      - name: Publish pre-release
+        if: inputs.channel == 'pre-release'
+        run: npx vsce publish --packagePath "${{ needs.package.outputs.vsix }}" --pre-release -p "$VSCE_PAT"
+        env:
+          VSCE_PAT: ${{ secrets.VSCE_PAT }}
+      - name: Publish stable
+        if: inputs.channel == 'stable'
+        run: npx vsce publish --packagePath "${{ needs.package.outputs.vsix }}" -p "$VSCE_PAT"
+        env:
+          VSCE_PAT: ${{ secrets.VSCE_PAT }}

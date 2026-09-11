@@ -1,6 +1,17 @@
 "use strict";
 
+const fs = require("node:fs");
+
 const scenario = process.argv[2] || "valid";
+const reliabilityLog = process.argv[3];
+const crashMarker = process.argv[4];
+let changeCount = 0;
+let crashTimer;
+
+function record(event, fields = {}) {
+  if (!reliabilityLog) return;
+  fs.appendFileSync(reliabilityLog, `${JSON.stringify({ event, time: Date.now(), pid: process.pid, ...fields })}\n`);
+}
 if (scenario === "crash") {
   process.stderr.write("TOKEN=must-not-leak\n");
   process.exit(7);
@@ -13,6 +24,11 @@ function send(message) {
   const body = Buffer.from(JSON.stringify(message));
   process.stdout.write(`Content-Length: ${body.length}\r\n\r\n`);
   process.stdout.write(body);
+}
+
+function publish(document) {
+  send({ jsonrpc: "2.0", method: "textDocument/publishDiagnostics", params: diagnostic(document.uri, document.version) });
+  record("diagnostic", { uri: document.uri, version: document.version });
 }
 
 function initializeResult() {
@@ -53,24 +69,37 @@ process.stdin.on("data", (chunk) => {
     const message = JSON.parse(input.subarray(bodyStart, bodyStart + length).toString("utf8"));
     input = input.subarray(bodyStart + length);
     if (message.method === "initialize") {
+      record("initialize");
       if (scenario === "malformed") process.stdout.write("Wrong: 2\r\n\r\n{}");
       else send({ jsonrpc: "2.0", id: message.id, result: initializeResult() });
     } else if (message.method === "shutdown") {
       send({ jsonrpc: "2.0", id: message.id, result: null });
-    } else if (scenario === "diagnostic-ux" && message.method === "textDocument/didOpen") {
+    } else if ((scenario === "diagnostic-ux" || scenario === "reliability") && message.method === "textDocument/didOpen") {
       const document = message.params.textDocument;
-      send({ jsonrpc: "2.0", method: "textDocument/publishDiagnostics", params: diagnostic(document.uri, document.version) });
-    } else if (scenario === "diagnostic-ux" && message.method === "textDocument/didChange") {
+      publish(document);
+    } else if ((scenario === "diagnostic-ux" || scenario === "reliability") && message.method === "textDocument/didChange") {
       const document = message.params.textDocument;
-      send({ jsonrpc: "2.0", method: "textDocument/publishDiagnostics", params: diagnostic(document.uri, document.version) });
+      changeCount++;
+      if (scenario === "reliability" && changeCount === 1 && crashMarker && !fs.existsSync(crashMarker)) {
+        record("crash-scheduled", { version: document.version });
+      }
+      if (scenario === "reliability" && crashMarker && !fs.existsSync(crashMarker)) {
+        if (crashTimer !== undefined) clearTimeout(crashTimer);
+        crashTimer = setTimeout(() => {
+          fs.writeFileSync(crashMarker, "crashed\n");
+          record("crash", { version: document.version });
+          process.exit(71);
+        }, 500);
+      }
+      publish(document);
       if (document.version > 1) setTimeout(() => {
         send({ jsonrpc: "2.0", method: "textDocument/publishDiagnostics", params: diagnostic(document.uri, document.version - 1) });
       }, 75);
-    } else if (scenario === "diagnostic-ux" && message.method === "textDocument/didClose") {
+    } else if ((scenario === "diagnostic-ux" || scenario === "reliability") && message.method === "textDocument/didClose") {
       send({ jsonrpc: "2.0", method: "textDocument/publishDiagnostics", params: { uri: message.params.textDocument.uri, diagnostics: [] } });
-    } else if (scenario === "diagnostic-ux" && message.method === "textDocument/diagnostic") {
+    } else if ((scenario === "diagnostic-ux" || scenario === "reliability") && message.method === "textDocument/diagnostic") {
       send({ jsonrpc: "2.0", id: message.id, result: { kind: "full", items: diagnostic(message.params.textDocument.uri).diagnostics } });
-    } else if (scenario === "diagnostic-ux" && message.method === "textDocument/codeAction") {
+    } else if ((scenario === "diagnostic-ux" || scenario === "reliability") && message.method === "textDocument/codeAction") {
       const uri = message.params.textDocument.uri;
       const sourceDiagnostic = diagnostic(uri).diagnostics[0];
       send({ jsonrpc: "2.0", id: message.id, result: [
@@ -78,9 +107,12 @@ process.stdin.on("data", (chunk) => {
         { title: "Unsafe command", kind: "quickfix", diagnostics: [sourceDiagnostic], command: { title: "unsafe", command: "fixture.unsafe" } },
         { title: "Unrelated refactor", kind: "refactor", edit: { changes: {} } },
       ] });
-    } else if (scenario === "diagnostic-ux" && message.method === "gopdsdk/ruleHelp") {
+    } else if ((scenario === "diagnostic-ux" || scenario === "reliability") && message.method === "gopdsdk/ruleHelp") {
       send({ jsonrpc: "2.0", id: message.id, result: { rule: { id: "fixture-rule", family: "fixture", summary: "fixture summary", defaultSeverity: "warning", confidence: "proven", safeFixPolicy: "replace fixture safely" }, documentation: "https://example.invalid/rules/fixture-rule" } });
+    } else if (message.method === "$/cancelRequest") {
+      record("cancel", { id: message.params?.id });
     } else if (message.method === "exit") {
+      record("exit");
       process.exit(0);
     }
   }

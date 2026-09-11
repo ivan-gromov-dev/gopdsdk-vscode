@@ -58,20 +58,41 @@ safe-edit application, and command registration beside any other Go provider.
 
 ## M4 — Reliability
 
-- stress rapid edits, folder changes, reloads, and server crashes;
-- measure activation, incremental latency, memory, and cancellation on a
+Status: complete; cross-platform CI and manual desktop smoke confirmation remain.
+
+- [x] stress rapid edits, folder changes, reloads, and server crashes;
+- [x] measure activation, incremental latency, memory, and cancellation on a
   commercially realistic game;
-- keep deep analysis off by default until external evidence supports it.
+- [x] keep deep analysis off by default until external evidence supports it.
 
 Verification: automated stress sessions and manual smoke checks on all three
 desktop platforms, labeled as editor-integration evidence.
 
+The deterministic Extension Host session creates a 603-file, three-module game,
+performs 40 rapid edits, forces one analyzer crash and recovery, adds and removes
+a workspace folder, and queues six server reloads. It records activation,
+incremental recovery, RSS growth, and observed LSP cancellations as structured
+editor-integration evidence. CI runs the session on Windows, macOS, and Linux;
+manual smoke results must name their host platform and must not be described as
+SDK, Simulator, USB, or physical-device evidence.
+
 ## M5 — Distribution
 
-- icons, screenshots, changelog, privacy and support policies;
-- signed CI builds, dependency review, SBOM, and VSIX artifacts;
-- pre-release, then stable Marketplace publication;
-- upgrade/downgrade checks across supported VS Code and gopdsdk versions.
+Status: implementation complete; real screenshots, hosted attestations, and
+Marketplace publication require external release evidence.
+
+- [x] icon, changelog, privacy, security, support, and release policies;
+- [x] signed CI provenance, dependency review, SBOM, and minimal VSIX artifacts;
+- [x] guarded pre-release and stable Marketplace publication workflow;
+- [x] install, upgrade, downgrade, and uninstall checks plus minimum/current VS
+  Code and analyzer-protocol compatibility matrices;
+- [ ] capture real product screenshots and complete reviewed pre-release, then
+  stable Marketplace publication.
+
+The 256×256 Marketplace icon is a mechanically resized copy of the canonical
+gopdsdk logo. Synthetic UI is not accepted as product evidence. Publishing
+remains an explicit operation gated by the `vscode-marketplace` environment and
+a distinct version/channel validation step.
 
 Exit criterion: VS Code, GoLand, and CLI expose equivalent rule identifiers,
 diagnostics, and safe fixes without analysis rules in editor clients.

@@ -4,7 +4,22 @@
   "description": "Playdate diagnostics and safe fixes powered by gopdsdk.",
   "version": "0.1.0",
   "publisher": "gopdsdk",
-  "license": "MIT",
+  "license": "SEE LICENSE IN LICENSE",
+  "icon": "assets/icon.png",
+  "pricing": "Free",
+  "preview": true,
+  "galleryBanner": {
+    "color": "#202124",
+    "theme": "dark"
+  },
+  "homepage": "https://github.com/ivan-gromov-dev/gopdsdk-vscode#readme",
+  "bugs": {
+    "url": "https://github.com/ivan-gromov-dev/gopdsdk-vscode/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ivan-gromov-dev/gopdsdk-vscode.git"
+  },
   "engines": {
     "vscode": "^1.95.0"
   },
@@ -174,6 +189,7 @@
     }
   },
   "scripts": {
+    "vscode:prepublish": "npm run check && npm run compile",
     "check": "tsc --noEmit",
     "compile": "esbuild ./src/extension.ts --bundle --platform=node --format=cjs --external:vscode --outfile=dist/extension.js --sourcemap",
     "test": "npm run check && npm run compile && npm run test:compile && npm run test:unit && npm run test:integration",
@@ -181,8 +197,12 @@
     "test:unit": "node --test dist-tests/tests/unit/*.test.js",
     "test:integration": "node --test dist-tests/tests/integration/executable.test.js",
     "test:extension": "npm run compile && npm run test:compile && node tests/run-extension-tests.cjs",
+    "test:reliability": "npm run compile && npm run test:compile && node tests/run-reliability-tests.cjs",
+    "test:install": "node tests/run-installation-tests.cjs",
     "watch": "npm run compile -- --watch",
-    "package": "npm run check && npm run compile && vsce package"
+    "package": "vsce package --no-dependencies",
+    "package:pre-release": "vsce package --no-dependencies --pre-release",
+    "sbom": "npm sbom --sbom-format spdx"
   },
   "dependencies": {
     "vscode-languageclient": "^9.0.1"
@@ -190,9 +210,9 @@
   "devDependencies": {
     "@types/node": "^22.10.0",
     "@types/vscode": "^1.95.0",
-    "@vscode/test-electron": "^2.5.2",
+    "@vscode/test-electron": "^3.1.0",
     "@vscode/vsce": "^3.2.1",
-    "esbuild": "^0.24.2",
+    "esbuild": "^0.28.2",
     "typescript": "^5.7.2"
   }
 }
