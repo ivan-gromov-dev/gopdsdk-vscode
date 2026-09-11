@@ -23,7 +23,7 @@ async function main() {
   }));
   try {
     await runTests({
-      version: "1.95.3",
+      version: process.env.VSCODE_TEST_VERSION || "1.95.3",
       extensionDevelopmentPath,
       extensionTestsPath: path.join(extensionDevelopmentPath, "dist-tests", "tests", "extension", "index.js"),
       launchArgs: [workspace, "--disable-extensions"],

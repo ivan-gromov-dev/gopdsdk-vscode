@@ -8,6 +8,8 @@ rule help, related locations, and safe quick fixes.
 general Go diagnostics. This extension contains no analysis rules: `gopdsdk`
 remains the single source of truth.
 
+![gopdsdk extension icon](assets/icon.png)
+
 ## Status
 
 This repository contains the TypeScript client. It starts the language server
@@ -32,6 +34,7 @@ actions are rejected by the client. Release automation is tracked in
 npm install
 npm run compile
 npm test
+npm run test:reliability
 ```
 
 Open this repository in VS Code and press `F5`. In the Extension Development
@@ -48,28 +51,39 @@ Commands:
 
 Build a local VSIX with `npm run package`.
 
+Release preparation and evidence gates are documented in
+[RELEASING.md](RELEASING.md). See [PRIVACY.md](PRIVACY.md),
+[SUPPORT.md](SUPPORT.md), and [SECURITY.md](SECURITY.md) before installation or
+reporting a problem.
+
 Unit tests live under `tests/unit`. Process-integration tests under
 `tests/integration` exercise executable discovery against the real filesystem
 on Windows, macOS, and Linux in CI. Extension Host coverage uses a real VS Code
 instance and deterministic LSP fixture for multi-root diagnostics, related
 locations, rule help, stale versions, and safe quick fixes.
+The reliability session uses a 603-file synthetic game workspace and emits a
+JSON editor-integration evidence record containing activation time, incremental
+crash-recovery latency, RSS growth, and the observed cancellation count. It also
+exercises rapid edits, workspace-folder churn, a forced server crash, and queued
+server restarts. CI runs both Extension Host suites on all three desktop
+platforms; timings are regression guards, not SDK or hardware performance claims.
 
 ## Configuration
 
-| Setting | Default | Meaning |
-| --- | --- | --- |
-| `gopdsdk.executable` | empty | Optional executable name on `PATH` or path. An empty value searches each workspace's `tools` and `bin` directories, then `PATH`. |
-| `gopdsdk.arguments` | `["lsp"]` | Language-server arguments. |
-| `gopdsdk.target` | `both` | Analysis target for the workspace folder. |
-| `gopdsdk.gopdsdkFloor` | empty | Oldest supported gopdsdk release. |
-| `gopdsdk.playdateSDK` | empty | Official Playdate SDK compatibility version. |
-| `gopdsdk.rules` / `gopdsdk.categories` | `[]` | Optional rule or category selection. |
-| `gopdsdk.excludeRules` | `[]` | Rules excluded from analysis. |
-| `gopdsdk.severities` | `{}` | Severity overrides keyed by rule or category. |
-| `gopdsdk.baseline` | empty | Workspace-relative adoption baseline path. |
-| `gopdsdk.changedFiles` | `[]` | Workspace-relative changed files; empty analyzes all files. |
-| `gopdsdk.deep` | `false` | Explicitly enable higher-cost deep analysis. |
-| `gopdsdk.trace.server` | `off` | LSP traffic trace level. |
+| Setting                                | Default   | Meaning                                                                                                                          |
+| -------------------------------------- | --------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| `gopdsdk.executable`                   | empty     | Optional executable name on `PATH` or path. An empty value searches each workspace's `tools` and `bin` directories, then `PATH`. |
+| `gopdsdk.arguments`                    | `["lsp"]` | Language-server arguments.                                                                                                       |
+| `gopdsdk.target`                       | `both`    | Analysis target for the workspace folder.                                                                                        |
+| `gopdsdk.gopdsdkFloor`                 | empty     | Oldest supported gopdsdk release.                                                                                                |
+| `gopdsdk.playdateSDK`                  | empty     | Official Playdate SDK compatibility version.                                                                                     |
+| `gopdsdk.rules` / `gopdsdk.categories` | `[]`      | Optional rule or category selection.                                                                                             |
+| `gopdsdk.excludeRules`                 | `[]`      | Rules excluded from analysis.                                                                                                    |
+| `gopdsdk.severities`                   | `{}`      | Severity overrides keyed by rule or category.                                                                                    |
+| `gopdsdk.baseline`                     | empty     | Workspace-relative adoption baseline path.                                                                                       |
+| `gopdsdk.changedFiles`                 | `[]`      | Workspace-relative changed files; empty analyzes all files.                                                                      |
+| `gopdsdk.deep`                         | `false`   | Explicitly enable higher-cost deep analysis.                                                                                     |
+| `gopdsdk.trace.server`                 | `off`     | LSP traffic trace level.                                                                                                         |
 
 Analyzer settings have resource scope, so each folder in a multi-root workspace
 gets an independent language-server client. Changes are sent with

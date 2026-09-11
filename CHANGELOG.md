@@ -1,0 +1,17 @@
+# Changelog
+
+All notable changes to the gopdsdk Visual Studio Code extension are documented
+here. The project uses distinct patch versions for Marketplace pre-release and
+stable builds because the Marketplace does not accept SemVer pre-release labels.
+
+## 0.1.0 — Unreleased
+
+- discover and compatibility-probe `gopdsdk lsp` per workspace folder;
+- configure analyzer targets, compatibility floors, rule selection, baselines,
+  changed files, severity overrides, and explicit deep analysis;
+- display diagnostics, related locations, versioned rule help, and
+  analyzer-provided edit-only safe fixes alongside `gopls`;
+- recover across configuration, workspace, and server lifecycle changes;
+- add cross-platform process, Extension Host, and reliability coverage;
+- add reproducible VSIX packaging, SPDX SBOMs, dependency review, and signed
+  GitHub build provenance.
