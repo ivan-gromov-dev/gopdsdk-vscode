@@ -1,8 +1,8 @@
 # gopdsdk for Visual Studio Code
 
-Thin Visual Studio Code integration for the `gopdsdk` analyzer. The extension
-runs `gopdsdk lsp` beside `gopls` and presents Playdate-specific diagnostics,
-rule help, related locations, and safe quick fixes.
+Thin Visual Studio Code integration for `gopdsdk`. The extension runs
+`gopdsdk lsp` beside `gopls`, presents Playdate-specific diagnostics and safe
+quick fixes, and drives Simulator builds and launches through the CLI.
 
 `gopls` continues to own completion, navigation, formatting, refactoring, and
 general Go diagnostics. This extension contains no analysis rules: `gopdsdk`
@@ -14,7 +14,10 @@ remains the single source of truth.
 
 This repository contains the TypeScript client. It starts the language server
 for Go workspaces and provides diagnostic refresh, restart, rule-help,
-troubleshooting, and output commands.
+troubleshooting, and Simulator workflow commands. Cancellable `gopdsdk` tasks
+show structured build progress; compiler source locations are published in the
+Problems view. The status bar shows the active analysis target, and the
+Playdate activity view provides focused build and run actions.
 Before startup it discovers the executable, performs a bounded LSP handshake,
 and requires analyzer protocol `v1` with diagnostics and safe-fix capabilities.
 Analyzer-provided edit-only quick fixes are accepted; command-based or unrelated
@@ -48,6 +51,9 @@ Commands:
 - `gopdsdk: Show Rule Help`
 - `gopdsdk: Troubleshoot`
 - `gopdsdk: Show Language Server Output`
+- `gopdsdk: Build for Simulator`
+- `gopdsdk: Build and Run in Simulator`
+- `gopdsdk: Select Analysis Target`
 
 Build a local VSIX with `npm run package`.
 

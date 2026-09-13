@@ -99,16 +99,16 @@ diagnostics, and safe fixes without analysis rules in editor clients.
 
 ## M6 — Simulator workflow
 
-Status: planned. This is the next functional scope after Marketplace
-pre-release validation.
+Status: implementation complete; official Simulator smoke tests on every
+claimed host remain external SDK-integration evidence.
 
-- build the active application for Simulator;
-- build and launch it in Playdate Simulator;
-- expose the active Simulator/device analysis target in the status bar;
-- contribute cancellable VS Code tasks with visible progress and output;
-- convert structured build failures with source locations into VS Code
+- [x] build the active application for Simulator;
+- [x] build and launch it in Playdate Simulator;
+- [x] expose the active Simulator/device analysis target in the status bar;
+- [x] contribute cancellable VS Code tasks with visible progress and output;
+- [x] convert structured build failures with source locations into VS Code
   diagnostics;
-- offer focused build/run actions from the command palette and Playdate view.
+- [x] offer focused build/run actions from the command palette and Playdate view.
 
 The client must invoke `gopdsdk build` and `gopdsdk run`; it must not reproduce
 build plans, SDK discovery, packaging, or launch policy. Initial delivery may
