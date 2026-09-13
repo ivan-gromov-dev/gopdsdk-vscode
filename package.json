@@ -24,7 +24,9 @@
     "vscode": "^1.95.0"
   },
   "activationEvents": [
-    "onLanguage:go"
+    "onLanguage:go",
+    "onView:gopdsdk.playdate",
+    "onTaskType:gopdsdk"
   ],
   "categories": [
     "Linters",
@@ -63,8 +65,42 @@
         "command": "gopdsdk.showOutput",
         "title": "Show Language Server Output",
         "category": "gopdsdk"
+      },
+      {
+        "command": "gopdsdk.buildSimulator",
+        "title": "Build for Simulator",
+        "category": "gopdsdk"
+      },
+      {
+        "command": "gopdsdk.runSimulator",
+        "title": "Build and Run in Simulator",
+        "category": "gopdsdk"
+      },
+      {
+        "command": "gopdsdk.selectTarget",
+        "title": "Select Analysis Target",
+        "category": "gopdsdk"
       }
     ],
+    "taskDefinitions": [
+      {
+        "type": "gopdsdk",
+        "required": ["command"],
+        "properties": {
+          "command": { "type": "string", "enum": ["build", "run"], "description": "Simulator workflow to execute." }
+        }
+      }
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        { "id": "gopdsdk", "title": "Playdate", "icon": "assets/playdate.svg" }
+      ]
+    },
+    "views": {
+      "gopdsdk": [
+        { "id": "gopdsdk.playdate", "name": "Simulator" }
+      ]
+    },
     "configuration": {
       "title": "gopdsdk",
       "properties": {

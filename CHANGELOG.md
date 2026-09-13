@@ -8,6 +8,9 @@ stable builds because the Marketplace does not accept SemVer pre-release labels.
 
 - always run shared SDK-contract diagnostics and expose only `simulator`,
   `device`, and `both` as configurable platform targets;
+- add cancellable Simulator build/run tasks backed by structured `gopdsdk`
+  results and progress events, build diagnostics, target status, and focused
+  command-palette and Playdate-view actions;
 
 ## 0.1.0 — 2026-09-11
 
