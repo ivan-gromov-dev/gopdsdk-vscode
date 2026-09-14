@@ -4,5 +4,5 @@
     "rootDir": ".",
     "outDir": "dist-tests"
   },
-  "include": ["src/configuration.ts", "src/diagnostics.ts", "src/executable.ts", "src/health.ts", "src/lifecycle.ts", "src/probe.ts", "src/workflow.ts", "tests/**/*.ts"]
+  "include": ["src/analyzerUx.ts", "src/configuration.ts", "src/diagnostics.ts", "src/executable.ts", "src/health.ts", "src/lifecycle.ts", "src/probe.ts", "src/workflow.ts", "tests/**/*.ts"]
 }

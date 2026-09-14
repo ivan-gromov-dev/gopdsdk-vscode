@@ -16,12 +16,25 @@ for pre-releases and `preview: false` for stable releases.
    `npm run test:reliability` on the supported desktop matrix.
 3. Confirm minimum and current stable VS Code Extension Host jobs pass and the
    supported/current analyzer protocol fixtures pass.
-4. Run `npm run package`, inspect `vsce ls`, install the VSIX into a disposable
+4. For 0.4.0 and later, record the exact `gopdsdk` version or immutable commit
+   used for analyzer-administration acceptance. Confirm it returns
+   `gopdsdk-analyzer-contracts/v1`, `gopdsdk-check/v1`, and
+   `gopdsdk-baseline-result/v1`; the required contracts postdate the v1.1.0
+   tag. Exercise configuration round trips, category browsing, enable/exclude
+   and severity changes, reason-required suppression, stale-document rejection,
+   baseline create/update/inspect/validate, and three-target comparison in each
+   supported host environment.
+5. Compare the resulting shared, Simulator, and device findings with equivalent
+   `gopdsdk check` invocations in the same external game. Record this as
+   external-consumer CLI/editor-integration evidence; fixture output alone does
+   not establish diagnostic parity.
+6. Run `npm run package`, inspect `vsce ls`, install the VSIX into a disposable
    profile, then smoke activation, diagnostics, rule help, safe fixes, restart,
-   upgrade, downgrade, and uninstall. Label this editor-integration evidence.
-5. Review `CHANGELOG.md`, `PRIVACY.md`, `SUPPORT.md`, `SECURITY.md`, the icon,
+   analyzer administration, upgrade, downgrade, and uninstall. Label this
+   editor-integration evidence.
+7. Review `CHANGELOG.md`, `PRIVACY.md`, `SUPPORT.md`, `SECURITY.md`, the icon,
    and real product screenshots. Do not publish synthetic UI as evidence.
-6. Verify the SPDX SBOM and GitHub provenance attestation for the exact VSIX.
+8. Verify the SPDX SBOM and GitHub provenance attestation for the exact VSIX.
 
 ## Publication
 

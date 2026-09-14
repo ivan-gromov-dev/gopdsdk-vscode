@@ -18,7 +18,10 @@ troubleshooting, and Simulator workflow commands. Cancellable `gopdsdk` tasks
 show structured build progress; compiler source locations are published in the
 Problems view. The status bar shows the active analysis target, and the
 Playdate activity view provides focused build and run actions, a structured
-Project Health report with remediation, and a guided project-creation flow.
+Project Health report with remediation, a guided project-creation flow, and
+analyzer administration without hand-editing configuration. The analyzer UX
+uses the installed binary's exact-version catalog and structured check and
+baseline contracts; the extension does not carry a second rule catalog.
 Before startup it discovers the executable, performs a bounded LSP handshake,
 and requires analyzer protocol `v1` with diagnostics and safe-fix capabilities.
 Analyzer-provided edit-only quick fixes are accepted; command-based or unrelated
@@ -30,6 +33,9 @@ actions are rejected by the client. Release automation is tracked in
 - Visual Studio Code 1.95 or newer;
 - `gopdsdk` with the `lsp` command in a workspace `tools`/`bin` directory or on
   `PATH`, or an explicit `gopdsdk.executable` setting;
+- for the 0.4 analyzer-administration commands, a `gopdsdk` build providing the
+  v1 rule-catalog, structured-check, and baseline-administration contracts
+  documented below (these contracts postdate the `gopdsdk` v1.1.0 tag);
 - the VS Code Go extension for normal Go language features.
 
 ## Development
@@ -58,6 +64,14 @@ Commands:
 - `gopdsdk: Show Project Health`
 - `gopdsdk: Fix Project Health Issue`
 - `gopdsdk: Create Playdate Project`
+- `gopdsdk: Configure Analyzer Target and Profile`
+- `gopdsdk: Browse Analyzer Rules`
+- `gopdsdk: Suppress Diagnostic with Reason`
+- `gopdsdk: Create Adoption Baseline`
+- `gopdsdk: Update Adoption Baseline`
+- `gopdsdk: Inspect Adoption Baseline`
+- `gopdsdk: Validate Adoption Baseline`
+- `gopdsdk: Compare Shared, Simulator, and Device Findings`
 
 Build a local VSIX with `npm run package`.
 
@@ -84,7 +98,7 @@ platforms; timings are regression guards, not SDK or hardware performance claims
 | -------------------------------------- | --------- | -------------------------------------------------------------------------------------------------------------------------------- |
 | `gopdsdk.executable`                   | empty     | Optional executable name on `PATH` or path. An empty value searches each workspace's `tools` and `bin` directories, then `PATH`. |
 | `gopdsdk.arguments`                    | `["lsp"]` | Language-server arguments.                                                                                                       |
-| `gopdsdk.target`                       | `both`    | Platform target (`simulator`, `device`, or `both`); shared SDK-contract analysis always runs.                                    |
+| `gopdsdk.target`                       | `both`    | Target (`shared`, `simulator`, `device`, or `both`); platform targets always include shared SDK-contract analysis.                |
 | `gopdsdk.gopdsdkFloor`                 | empty     | Oldest supported gopdsdk release.                                                                                                |
 | `gopdsdk.playdateSDK`                  | empty     | Official Playdate SDK compatibility version.                                                                                     |
 | `gopdsdk.rules` / `gopdsdk.categories` | `[]`      | Optional rule or category selection.                                                                                             |
@@ -99,6 +113,18 @@ Analyzer settings have resource scope, so each folder in a multi-root workspace
 gets an independent language-server client. Changes are sent with
 `workspace/didChangeConfiguration`; executable and argument changes still
 restart the affected clients.
+
+`Configure Analyzer Target and Profile` and the rule browser update the
+workspace's `.gopdsdk-check.json`, preserving its other fields. The rule browser
+groups the catalog returned by `gopdsdk rules --format json` and can enable or
+exclude a rule, set its severity, or open version-matched help. From a gopdsdk
+problem, `Suppress Diagnostic with Reason` inserts the analyzer-owned directive
+only if the source document has not changed while the reason is entered.
+Baseline commands generate a current structured check report and delegate all
+creation, replacement, validation, and stale-entry decisions to `gopdsdk`.
+If the selected executable does not provide one of these v1 contracts, the
+command stops with an actionable compatibility error instead of parsing prose
+or guessing a result.
 
 ## Architecture
 
