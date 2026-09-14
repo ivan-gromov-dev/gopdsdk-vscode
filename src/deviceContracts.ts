@@ -1,4 +1,4 @@
-export type DeviceCommand = "build device" | "run device" | "probe connection" | "crashlog" | "errorlog";
+export type DeviceCommand = "build device" | "run device" | "probe connection" | "crashlog" | "errorlog" | "device disk mount" | "device disk unmount";
 
 export interface DeviceFailure { category: string; }
 export interface DeviceResult {
@@ -9,6 +9,8 @@ export interface DeviceResult {
   execution?: string;
   connected?: boolean;
   evidenceLevel?: string;
+  mode?: "disk" | "connected";
+  mountPath?: string;
   log?: { kind: string; path: string; content: string };
   failure?: DeviceFailure;
 }
@@ -21,6 +23,7 @@ export function deviceArguments(command: DeviceCommand): string[] {
   if (command === "build device") return ["build", "device", "--format", "json", "--progress", "."];
   if (command === "run device") return ["run", "device", "--format", "json", "--progress", "."];
   if (command === "probe connection") return ["probe", "connection", "--format", "json"];
+  if (command === "device disk mount" || command === "device disk unmount") return ["device", "disk", command === "device disk mount" ? "mount" : "unmount", "--format", "json", "--progress"];
   return [command, "--format", "json", "--progress"];
 }
 
@@ -59,6 +62,12 @@ export function decodeDeviceResult(text: string, expected: DeviceCommand): Devic
     if (expected === "run device" && (result.deployment !== "installed" || result.execution !== "launched")) throw new Error("Invalid device deployment result.");
     return { command: expected, package: result.package, artifact: result.artifact as string | undefined, deployment: result.deployment as string | undefined, execution: result.execution as string | undefined };
   }
+  if (expected === "device disk mount" || expected === "device disk unmount") {
+    if (result?.schema !== "gopdsdk-device-disk/v1" || (result.mode !== "disk" && result.mode !== "connected")) throw new Error("Incompatible device disk result. Update gopdsdk.");
+    if (expected === "device disk mount" && (result.mode !== "disk" || typeof result.mountPath !== "string" || !result.mountPath)) throw new Error("Invalid mounted device disk result.");
+    if (expected === "device disk unmount" && result.mode !== "connected") throw new Error("Invalid unmounted device result.");
+    return { command: expected, mode: result.mode, mountPath: result.mountPath as string | undefined };
+  }
   if (result?.schema !== "gopdsdk-device-log/v1") throw new Error("Incompatible device log result. Update gopdsdk.");
   const metadata = object(result.metadata); const content = object(result.content);
   if (typeof metadata?.kind !== "string" || typeof metadata.path !== "string" || !Number.isSafeInteger(metadata.byteCount) || content?.encoding !== "base64" || typeof content.data !== "string") throw new Error("Invalid device log result.");
@@ -68,7 +77,7 @@ export function decodeDeviceResult(text: string, expected: DeviceCommand): Devic
 }
 
 export function deviceStageLabel(stage: string): string {
-  return ({ planning: "Planning", compilation: "Compiling", packaging: "Packaging", connection: "Checking connection", deployment: "Deploying", launch: "Launching on Playdate", retrieval: "Reading device log", cleanup: "Cleaning up" } as Record<string, string>)[stage] ?? stage;
+  return ({ planning: "Planning", compilation: "Compiling", packaging: "Packaging", connection: "Checking connection", deployment: "Deploying", launch: "Launching on Playdate", retrieval: "Reading device log", mount: "Entering Data Disk mode", unmount: "Safely ejecting Data Disk", cleanup: "Cleaning up" } as Record<string, string>)[stage] ?? stage;
 }
 
 export function cancelChild(child: Pick<ChildProcess, "exitCode" | "kill">): boolean {

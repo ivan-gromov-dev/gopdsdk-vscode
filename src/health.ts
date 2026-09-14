@@ -67,7 +67,7 @@ export function decodeDoctor(text: string): DoctorReport {
 
 const icons: Record<HealthStatus, string> = { ready: "✅", missing: "❌", incompatible: "❌", unverified: "⚠️" };
 
-export function healthMarkdown(report: DoctorReport, connection: "unchecked" | "checking" | "connected" | "disconnected" | "error", files: Record<string, boolean>, executable: string, analyzerProtocol: string): string {
+export function healthMarkdown(report: DoctorReport, connection: "unchecked" | "checking" | "connected" | "disk" | "disconnected" | "error", files: Record<string, boolean>, executable: string, analyzerProtocol: string): string {
   const checks = report.checks.filter((check) => check.id !== "device-deploy");
   const missing = missingToolchain(report);
   const lines = ["# gopdsdk Project Health", "", `Host: \`${report.host}\``, `gopdsdk: \`${executable}\``, `Analyzer protocol: \`${analyzerProtocol}\``,
