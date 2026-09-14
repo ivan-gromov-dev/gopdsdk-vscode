@@ -145,14 +145,17 @@ their corresponding external evidence rather than fixture results.
 
 ## M8 — Analyzer configuration UX
 
-Status: planned.
+Status: complete; cross-platform Extension Host confirmation and external-game
+diagnostic parity remain.
 
-- select the analysis target and profile without opening raw settings;
-- browse rules by category, inspect exact-version help, enable or exclude rules,
+Release target: VS Code extension 0.4.0.
+
+- [x] select the analysis target and profile without opening raw settings;
+- [x] browse rules by category, inspect exact-version help, enable or exclude rules,
   and override severities;
-- add an inline suppression with a required reason from a diagnostic;
-- create, update, inspect, and validate adoption baselines;
-- compare shared, Simulator, and device findings for the same workspace.
+- [x] add an inline suppression with a required reason from a diagnostic;
+- [x] create, update, inspect, and validate adoption baselines;
+- [x] compare shared, Simulator, and device findings for the same workspace.
 
 The extension may edit `.gopdsdk-check.json` and analyzer-owned suppression
 comments, but it must not embed rule semantics or maintain a second rule
@@ -163,6 +166,14 @@ diagnostics, rule help, and safe edits remain the source of truth.
 
 Verification: round-trip configuration fixtures, stale-document rejection,
 multi-root isolation, and parity with equivalent `gopdsdk check` results.
+
+The unit suite covers configuration round trips, protocol/schema rejection,
+stale-document suppression rejection, and deterministic comparison rendering.
+Every command resolves the active resource's workspace folder independently;
+Extension Host and external-game parity remain separately labeled evidence.
+The required analyzer-administration contracts exist on current `gopdsdk`
+development history after the v1.1.0 tag; 0.4.0 release evidence must identify
+the exact compatible version or immutable commit.
 
 ## M9 — Device workflow and logs
 

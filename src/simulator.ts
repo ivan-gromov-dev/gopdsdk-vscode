@@ -152,6 +152,9 @@ export function registerSimulatorWorkflow(context: vscode.ExtensionContext): voi
       new PlaydateItem("Project Health", "gopdsdk.showProjectHealth", "pulse"),
       new PlaydateItem("Fix Project Health Issue", "gopdsdk.remediateProjectHealth", "wrench"),
       new PlaydateItem("Create Playdate Project", "gopdsdk.createProject", "new-folder"),
+      new PlaydateItem("Configure Analyzer", "gopdsdk.configureAnalyzer", "settings-gear"),
+      new PlaydateItem("Browse Analyzer Rules", "gopdsdk.browseRules", "list-tree"),
+      new PlaydateItem("Compare Analysis Targets", "gopdsdk.compareTargets", "diff"),
       new PlaydateItem("Build for Simulator", "gopdsdk.buildSimulator", "tools"),
       new PlaydateItem("Build and Run in Simulator", "gopdsdk.runSimulator", "play"),
     ],
@@ -162,7 +165,7 @@ export function registerSimulatorWorkflow(context: vscode.ExtensionContext): voi
     vscode.commands.registerCommand("gopdsdk.runSimulator", (resource?: vscode.Uri) => runTask("run", resource)),
     vscode.commands.registerCommand("gopdsdk.selectTarget", async () => {
       const folder = folderFor(); if (!folder) return;
-      const target = await vscode.window.showQuickPick(["simulator", "device", "both"], { placeHolder: "Select gopdsdk analysis target" });
+      const target = await vscode.window.showQuickPick(["shared", "simulator", "device", "both"], { placeHolder: "Select gopdsdk analysis target" });
       if (target) await vscode.workspace.getConfiguration("gopdsdk", folder.uri).update("target", target, vscode.ConfigurationTarget.WorkspaceFolder);
     }),
     vscode.window.onDidChangeActiveTextEditor(updateStatus),

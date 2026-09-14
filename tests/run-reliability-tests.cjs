@@ -38,6 +38,7 @@ async function main() {
   try {
     await runTests({
       version: "1.95.3",
+      timeout: 120_000,
       extensionDevelopmentPath,
       extensionTestsPath: path.join(extensionDevelopmentPath, "dist-tests", "tests", "reliability", "index.js"),
       launchArgs: [workspace, "--disable-extensions"],

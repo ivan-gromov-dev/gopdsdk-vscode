@@ -95,8 +95,62 @@
         "command": "gopdsdk.createProject",
         "title": "Create Playdate Project",
         "category": "gopdsdk"
+      },
+      {
+        "command": "gopdsdk.configureAnalyzer",
+        "title": "Configure Analyzer Target and Profile",
+        "category": "gopdsdk"
+      },
+      {
+        "command": "gopdsdk.browseRules",
+        "title": "Browse Analyzer Rules",
+        "category": "gopdsdk"
+      },
+      {
+        "command": "gopdsdk.addSuppression",
+        "title": "Suppress Diagnostic with Reason",
+        "category": "gopdsdk"
+      },
+      {
+        "command": "gopdsdk.createBaseline",
+        "title": "Create Adoption Baseline",
+        "category": "gopdsdk"
+      },
+      {
+        "command": "gopdsdk.updateBaseline",
+        "title": "Update Adoption Baseline",
+        "category": "gopdsdk"
+      },
+      {
+        "command": "gopdsdk.inspectBaseline",
+        "title": "Inspect Adoption Baseline",
+        "category": "gopdsdk"
+      },
+      {
+        "command": "gopdsdk.validateBaseline",
+        "title": "Validate Adoption Baseline",
+        "category": "gopdsdk"
+      },
+      {
+        "command": "gopdsdk.compareTargets",
+        "title": "Compare Shared, Simulator, and Device Findings",
+        "category": "gopdsdk"
       }
     ],
+    "menus": {
+      "problems/context": [
+        {
+          "command": "gopdsdk.addSuppression",
+          "when": "diagnosticSource == gopdsdk",
+          "group": "navigation"
+        },
+        {
+          "command": "gopdsdk.showRuleHelp",
+          "when": "diagnosticSource == gopdsdk",
+          "group": "navigation"
+        }
+      ]
+    },
     "taskDefinitions": [
       {
         "type": "gopdsdk",
@@ -137,13 +191,14 @@
         "gopdsdk.target": {
           "type": "string",
           "enum": [
+            "shared",
             "simulator",
             "device",
             "both"
           ],
           "default": "both",
           "scope": "resource",
-          "description": "Platform analysis target for this workspace folder. Shared SDK-contract analysis is always enabled."
+          "description": "Analysis target for this workspace folder. Platform targets always include shared SDK-contract analysis."
         },
         "gopdsdk.gopdsdkFloor": {
           "type": "string",

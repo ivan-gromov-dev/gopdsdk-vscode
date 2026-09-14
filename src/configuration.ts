@@ -1,4 +1,4 @@
-export type AnalyzerTarget = "simulator" | "device" | "both";
+export type AnalyzerTarget = "shared" | "simulator" | "device" | "both";
 export type DiagnosticSeverity = "error" | "warning" | "performance" | "information";
 
 export interface ConfigurationReader {
