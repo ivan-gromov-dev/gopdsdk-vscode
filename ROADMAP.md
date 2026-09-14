@@ -208,16 +208,30 @@ those fixtures or editor integration.
 
 ## M10 — Playdate workspace view
 
-Status: planned after the underlying actions are stable.
+Status: complete; cross-platform Extension Host confirmation remains.
 
-Add a Playdate activity-bar view that summarizes the active project, selected
-target, gopdsdk and Playdate SDK versions, health state, device connection,
-build/run actions, logs, and diagnostic counts. The view is a projection of the
-M6–M9 contracts, not an independent implementation of discovery, analysis, or
-device behavior.
+- [x] summarize the active project, selected target, compatible gopdsdk analyzer
+  protocol, Playdate SDK version, health state, explicit USB connection, and
+  gopdsdk diagnostic counts;
+- [x] route Simulator/device build and run actions and explicit device-log
+  actions through the existing M6–M9 commands;
+- [x] support explicit and editor-driven root selection in multi-root
+  workspaces;
+- [x] expose refresh plus accessible empty, loading, ready, and error states.
+
+The view reads only versioned doctor and connection-probe results and the
+existing LSP compatibility handshake. It does not infer readiness from
+executable discovery, silently retrieve device logs, or duplicate workflow and
+analyzer behavior. Diagnostic counts come from the same gopdsdk entries shown
+in the Problems view.
 
 Verification: multi-root selection, refresh, accessibility, empty/loading/error
 states, command routing, and consistency with the status bar and Problems view.
+
+The unit suite covers all view states, summaries, counts, and command routing.
+A Windows Extension Host test covers command registration in the two-root
+fixture. No SDK, Simulator, USB, log-retrieval, or physical-device readiness is
+claimed from these tests.
 
 ## Required gopdsdk contracts
 
