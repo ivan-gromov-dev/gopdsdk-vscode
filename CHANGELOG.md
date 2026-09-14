@@ -6,6 +6,16 @@ stable builds because the Marketplace does not accept SemVer pre-release labels.
 
 ## Unreleased
 
+## 0.5.0 — 2026-09-14
+
+- add an explicit USB device-connection status and cancellable device build,
+  install, and launch commands with structured progress and typed failures;
+- add user-requested `crashlog` and `errorlog` retrieval in read-only virtual
+  documents, with explicit log actions offered after failed device runs;
+- add strict v1 device-contract fixtures and running-process cancellation
+  coverage plus Windows Extension Host command-registration evidence;
+  physical-device acceptance remains an external evidence gate;
+
 ## 0.4.0 — 2026-09-14
 
 - add repository-backed target/profile configuration and exact-version rule

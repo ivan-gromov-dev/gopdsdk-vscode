@@ -157,6 +157,11 @@ export function registerSimulatorWorkflow(context: vscode.ExtensionContext): voi
       new PlaydateItem("Compare Analysis Targets", "gopdsdk.compareTargets", "diff"),
       new PlaydateItem("Build for Simulator", "gopdsdk.buildSimulator", "tools"),
       new PlaydateItem("Build and Run in Simulator", "gopdsdk.runSimulator", "play"),
+      new PlaydateItem("Check Device Connection", "gopdsdk.checkDeviceConnection", "plug"),
+      new PlaydateItem("Build for Device", "gopdsdk.buildDevice", "tools"),
+      new PlaydateItem("Build and Run on Device", "gopdsdk.runDevice", "device-mobile"),
+      new PlaydateItem("Open Device Crash Log", "gopdsdk.showCrashLog", "error"),
+      new PlaydateItem("Open Device Error Log", "gopdsdk.showErrorLog", "output"),
     ],
   };
   context.subscriptions.push(

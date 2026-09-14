@@ -177,14 +177,17 @@ the exact compatible version or immutable commit.
 
 ## M9 — Device workflow and logs
 
-Status: planned after the Simulator workflow.
+Status: complete; device-build, USB, and physical-device acceptance remain
+separately labeled external evidence gates.
 
-- show explicit device connection state without treating executable discovery
+Release target: VS Code extension 0.5.0.
+
+- [x] show explicit device connection state without treating executable discovery
   as connectivity;
-- build, install, and run the active application on a connected Playdate;
-- expose `crashlog` and `errorlog` in read-only editor documents;
-- report build, connection, deployment, and launch as distinct progress stages;
-- offer log inspection after a failed run only through an explicit user action
+- [x] build, install, and run the active application on a connected Playdate;
+- [x] expose `crashlog` and `errorlog` in read-only editor documents;
+- [x] report build, connection, deployment, and launch as distinct progress stages;
+- [x] offer log inspection after a failed run only through an explicit user action
   or opt-in setting.
 
 The client delegates to `gopdsdk build device`, `gopdsdk run device`,
@@ -196,6 +199,12 @@ evidence and must not be read silently by activation or background polling.
 Verification: command-fixture and cancellation coverage first, followed by
 separately labeled device-build, USB, and physical-device acceptance. Simulator
 or Extension Host tests do not establish device readiness.
+
+The unit suite covers structured command arguments and results, USB evidence
+classification, staged progress, exact log decoding, schema rejection, and
+running-process cancellation. A Windows Extension Host run confirms command
+registration. No SDK, USB, or physical-device readiness claim is made from
+those fixtures or editor integration.
 
 ## M10 — Playdate workspace view
 
