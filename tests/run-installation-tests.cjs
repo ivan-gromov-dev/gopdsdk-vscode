@@ -25,7 +25,7 @@ function run(cli, baseArgs, args) {
 async function main() {
   assert.ok(fs.existsSync(previousVSIX), `missing previous VSIX: ${previousVSIX}`);
   assert.ok(fs.existsSync(currentVSIX), `missing current VSIX: ${currentVSIX}`);
-  const executable = await downloadAndUnzipVSCode(process.env.VSCODE_TEST_VERSION || "1.95.3");
+  const executable = await downloadAndUnzipVSCode({ version: process.env.VSCODE_TEST_VERSION || "1.95.3", timeout: 120_000 });
   const [cli, ...baseArgs] = resolveCliArgsFromVSCodeExecutablePath(executable);
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "gopdsdk-vscode-install-"));
   const common = ["--user-data-dir", path.join(root, "user"), "--extensions-dir", path.join(root, "extensions")];

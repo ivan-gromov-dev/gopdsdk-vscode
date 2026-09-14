@@ -16,6 +16,8 @@ stable builds because the Marketplace does not accept SemVer pre-release labels.
   by the versioned gopdsdk contracts;
 - add a structured comparison of shared, Simulator, and device findings with
   folder-local execution for multi-root workspaces;
+- allow slow VS Code archive transfers up to two minutes between received
+  chunks in Extension Host, reliability, and installation test runners;
 
 The analyzer-administration commands require a `gopdsdk` build that provides
 `gopdsdk rules --format json`, `gopdsdk check --format json`, and deterministic
