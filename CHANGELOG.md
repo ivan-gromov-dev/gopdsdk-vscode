@@ -6,6 +6,13 @@ stable builds because the Marketplace does not accept SemVer pre-release labels.
 
 ## Unreleased
 
+## 1.0.2 — 2026-09-14
+
+- make physical connection optional for Workspace and Project Health refresh,
+  require installed toolchain components instead, and project per-workspace
+  `unchecked`, `checking`, `connected`, `disconnected`, or `error` state after
+  an explicit connection check or device run;
+
 ## 1.0.1 — 2026-09-14
 
 - remove the CLI-only `shared` target from editor settings and selectors, and

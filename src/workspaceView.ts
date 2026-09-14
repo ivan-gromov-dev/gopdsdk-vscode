@@ -2,9 +2,10 @@ import { spawn } from "node:child_process";
 import * as path from "node:path";
 import * as vscode from "vscode";
 import { discoverExecutable } from "./executable";
-import { decodeConnectionProbe, decodeDoctor } from "./health";
+import { decodeDoctor, toolchainSummary } from "./health";
 import { probeServer } from "./probe";
 import { WorkspaceNode, workspaceNodes, WorkspaceSnapshot } from "./workspaceViewModel";
+import { deviceConnections } from "./deviceConnectionState";
 
 function run(command: string, args: string[], cwd: string): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -52,17 +53,16 @@ export function registerWorkspaceView(context: vscode.ExtensionContext): void {
     try {
       const config = vscode.workspace.getConfiguration("gopdsdk", selected.uri);
       const binary = (await discoverExecutable({ configured: config.get<string>("executable", ""), workspaceFolders: [selected.uri.fsPath], pathValue: process.env.PATH, pathExt: process.env.PATHEXT })).command;
-      const [doctorText, connectionText, server] = await Promise.all([
+      const [doctorText, server] = await Promise.all([
         run(binary, ["doctor", "--format", "json"], selected.uri.fsPath),
-        run(binary, ["probe", "connection", "--format", "json"], selected.uri.fsPath),
         probeServer({ command: binary, args: config.get<string[]>("arguments", ["lsp"]), cwd: selected.uri.fsPath }),
       ]);
-      const doctor = decodeDoctor(doctorText); const connection = decodeConnectionProbe(connectionText);
+      const doctor = decodeDoctor(doctorText);
       snapshot = {
         state: "ready", folder: selected.name, target: config.get<string>("target", "both"),
         gopdsdk: `${path.basename(binary)} (analyzer ${server.analyzerProtocol})`, sdk: doctor.sdk?.version ?? "not found",
-        health: doctor.checks.every((check) => check.status === "ready") ? "ready" : `${doctor.checks.filter((check) => check.status !== "ready").length} issue(s)`,
-        device: connection.status === "ready" && connection.evidenceLevel === "usb" ? "connected" : "disconnected",
+        health: toolchainSummary(doctor),
+        device: deviceConnections.get(selected.uri.toString()),
         diagnostics: diagnosticCounts(),
       };
     } catch (error) { snapshot = { state: "error", folder: selected.name, error: error instanceof Error ? error.message : "Unknown error" }; }
@@ -77,6 +77,7 @@ export function registerWorkspaceView(context: vscode.ExtensionContext): void {
     }),
     vscode.workspace.onDidChangeWorkspaceFolders(refresh), vscode.window.onDidChangeActiveTextEditor((editor) => {
       const folder = editor && vscode.workspace.getWorkspaceFolder(editor.document.uri); if (folder && folder.uri.toString() !== selected?.uri.toString()) { selected = folder; void refresh(); }
-    }), vscode.languages.onDidChangeDiagnostics(() => { if (snapshot.state === "ready") { snapshot = { ...snapshot, diagnostics: diagnosticCounts() }; changed.fire(); } }));
+    }), deviceConnections.subscribe((key, state) => { if (snapshot.state === "ready" && selected?.uri.toString() === key) { snapshot = { ...snapshot, device: state }; changed.fire(); } }),
+    vscode.languages.onDidChangeDiagnostics(() => { if (snapshot.state === "ready") { snapshot = { ...snapshot, diagnostics: diagnosticCounts() }; changed.fire(); } }));
   void refresh();
 }

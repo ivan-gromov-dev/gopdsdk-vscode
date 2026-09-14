@@ -124,18 +124,18 @@ in the official Simulator on every claimed host platform.
 Status: complete; cross-platform Extension Host confirmation and external
 SDK, Simulator, USB, and device evidence remain.
 
-- [x] present gopdsdk, analyzer-protocol, Playdate SDK, Simulator, device-toolchain,
-  USB connection, module, manifest, and analyzer-configuration readiness in one
-  Project Health surface;
+- [x] present gopdsdk, analyzer-protocol, Playdate SDK, installed Simulator and
+  device toolchains, module, manifest, analyzer configuration, and the last
+  explicitly checked USB state in one Project Health surface;
 - [x] attach focused remediation actions to failed checks;
 - [x] create a new game through a guided wrapper around `gopdsdk init`, then open
   the generated workspace and offer its first Simulator run;
 - [x] keep raw troubleshooting output available for support.
 
-The health view consumes `gopdsdk doctor` and the relevant `gopdsdk probe`
-commands. A stable structured doctor/probe report is required before the view
-may classify individual checks or attach remediation actions; parsing prose is
-not an accepted integration contract. The project wizard may ship against the
+The health view consumes `gopdsdk doctor` for required toolchain discovery.
+Physical connection is optional and is never probed by opening or refreshing
+Project Health; the view projects the last explicit device-workflow check.
+Parsing prose is not an accepted integration contract. The project wizard may ship against the
 existing structured command arguments, provided success and the created path
 can be identified without parsing incidental log text.
 
@@ -219,11 +219,12 @@ Status: complete; cross-platform Extension Host confirmation remains.
   workspaces;
 - [x] expose refresh plus accessible empty, loading, ready, and error states.
 
-The view reads only versioned doctor and connection-probe results and the
-existing LSP compatibility handshake. It does not infer readiness from
-executable discovery, silently retrieve device logs, or duplicate workflow and
-analyzer behavior. Diagnostic counts come from the same gopdsdk entries shown
-in the Problems view.
+The view reads the versioned doctor result and existing LSP compatibility
+handshake on refresh. It projects optional connection state only after an
+explicit connection check or device run; it does not poll USB on activation,
+infer connectivity from tool discovery, silently retrieve device logs, or
+duplicate workflow and analyzer behavior. Diagnostic counts come from the same
+gopdsdk entries shown in the Problems view.
 
 Verification: multi-root selection, refresh, accessibility, empty/loading/error
 states, command routing, and consistency with the status bar and Problems view.
