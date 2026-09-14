@@ -1,4 +1,4 @@
-export type AnalyzerTarget = "shared" | "simulator" | "device" | "both";
+export type AnalyzerTarget = "simulator" | "device" | "both";
 export type DiagnosticSeverity = "error" | "warning" | "performance" | "information";
 
 export interface ConfigurationReader {
@@ -23,8 +23,10 @@ function strings(values: readonly string[]): string[] {
 }
 
 export function analyzerSettings(configuration: ConfigurationReader): AnalyzerSettings {
+  const configuredTarget = configuration.get<string>("target", "both");
+  const target: AnalyzerTarget = configuredTarget === "simulator" || configuredTarget === "device" || configuredTarget === "both" ? configuredTarget : "both";
   return {
-    target: configuration.get<AnalyzerTarget>("target", "both"),
+    target,
     gopdsdkFloor: configuration.get<string>("gopdsdkFloor", "").trim(),
     playdateSDK: configuration.get<string>("playdateSDK", "").trim(),
     rules: strings(configuration.get<string[]>("rules", [])),

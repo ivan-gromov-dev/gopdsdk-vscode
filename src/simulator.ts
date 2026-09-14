@@ -144,7 +144,7 @@ export function registerSimulatorWorkflow(context: vscode.ExtensionContext): voi
     vscode.commands.registerCommand("gopdsdk.runSimulator", (resource?: vscode.Uri) => runTask("run", resource)),
     vscode.commands.registerCommand("gopdsdk.selectTarget", async () => {
       const folder = folderFor(); if (!folder) return;
-      const target = await vscode.window.showQuickPick(["shared", "simulator", "device", "both"], { placeHolder: "Select gopdsdk analysis target" });
+      const target = await vscode.window.showQuickPick(["simulator", "device", "both"], { placeHolder: "Select gopdsdk analysis target" });
       if (target) await vscode.workspace.getConfiguration("gopdsdk", folder.uri).update("target", target, vscode.ConfigurationTarget.WorkspaceFolder);
     }),
     vscode.window.onDidChangeActiveTextEditor(updateStatus),

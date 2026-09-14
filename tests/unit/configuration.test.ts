@@ -30,3 +30,8 @@ test("distinguishes hot analyzer settings from launch settings", () => {
   assert.equal(analyzerConfigurationChanged((section) => section === "gopdsdk.deep"), true);
   assert.equal(analyzerConfigurationChanged((section) => section === "gopdsdk.executable"), false);
 });
+
+test("normalizes removed shared editor target to both", () => {
+  assert.equal(analyzerSettings(configuration({ target: "shared" })).target, "both");
+  assert.equal(analyzerSettings(configuration({ target: "other" })).target, "both");
+});

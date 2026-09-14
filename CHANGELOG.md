@@ -6,8 +6,10 @@ stable builds because the Marketplace does not accept SemVer pre-release labels.
 
 ## Unreleased
 
-## 1.0.0 — 2026-09-14
+## 1.0.1 — 2026-09-14
 
+- remove the CLI-only `shared` target from editor settings and selectors, and
+  normalize stale persisted values to `both`;
 - replace the static Playdate action list with an accessible workspace summary
   for the selected root, target, compatible analyzer protocol, Playdate SDK,
   project health, explicit USB connection, and Problems-view diagnostic counts;
