@@ -29,6 +29,8 @@ Workspace and Project Health refresh never require or automatically probe a
 physical device. Device commands verify USB separately from tool discovery,
 build/install/launch through structured CLI results, and open crash and error
 logs as read-only virtual documents only when explicitly requested.
+Explicit commands enter Data Disk mode or safely eject it and wait for the
+device to return to the connected USB state.
 Before startup it discovers the executable, performs a bounded LSP handshake,
 and requires analyzer protocol `v1` with diagnostics and safe-fix capabilities.
 Analyzer-provided edit-only quick fixes are accepted; command-based or unrelated
@@ -72,6 +74,8 @@ Commands:
 - `gopdsdk: Check Device Connection`
 - `gopdsdk: Build for Device`
 - `gopdsdk: Build, Install, and Run on Device`
+- `gopdsdk: Mount Device Data Disk`
+- `gopdsdk: Safely Eject Device Data Disk`
 - `gopdsdk: Open Device Crash Log`
 - `gopdsdk: Open Device Error Log`
 - `gopdsdk: Select Analysis Target`

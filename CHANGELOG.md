@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.1.0 — 2026-09-14
+
+- add explicit Data Disk mount and safe-eject commands to the command palette
+  and Playdate Workspace view;
+- track Data Disk as a distinct device state and return to connected only after
+  the CLI confirms USB reconnection;
+- require the versioned `gopdsdk-device-disk/v1` tooling contract.
+
 All notable changes to the gopdsdk Visual Studio Code extension are documented
 here. The project uses distinct patch versions for Marketplace pre-release and
 stable builds because the Marketplace does not accept SemVer pre-release labels.

@@ -234,6 +234,24 @@ A Windows Extension Host test covers command registration in the two-root
 fixture. No SDK, Simulator, USB, log-retrieval, or physical-device readiness is
 claimed from these tests.
 
+## M11 — Data Disk lifecycle
+
+Status: implementation complete; cross-platform OS-eject and physical-device
+acceptance remain external evidence gates.
+
+Release target: VS Code extension 1.1.0.
+
+- [x] explicitly mount the Playdate Data Disk from the command palette and
+  Workspace view;
+- [x] safely eject a mounted Data Disk and wait until the device reconnects;
+- [x] distinguish `disk` from connected, disconnected, checking, and error
+  states without background USB polling;
+- [x] consume versioned `gopdsdk device disk mount|unmount` results and progress.
+
+Log retrieval still enters Data Disk mode only on explicit user action. It does
+not automatically eject afterward; the user can inspect additional files and
+then invoke the explicit safe-eject action.
+
 ## Required gopdsdk contracts
 
 The first terminal-backed Simulator build/run slice and a basic `gopdsdk init`
@@ -242,7 +260,7 @@ compatible additions to gopdsdk before the corresponding rich UI is considered
 stable:
 
 - versioned JSON results for build, run, doctor, Simulator/device probes, USB
-  connection, device deployment, and log retrieval;
+  connection, device deployment, log retrieval, and Data Disk mount/unmount;
 - structured source locations, artifact paths, typed failure categories, and
   cancellable progress events where those concepts apply;
 - a versioned analyzer rule-catalog endpoint rather than a catalog copied into

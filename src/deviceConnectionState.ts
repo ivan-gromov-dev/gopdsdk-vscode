@@ -1,4 +1,4 @@
-export type DeviceConnectionState = "unchecked" | "checking" | "connected" | "disconnected" | "error";
+export type DeviceConnectionState = "unchecked" | "checking" | "connected" | "disk" | "disconnected" | "error";
 
 type Listener = (key: string, state: DeviceConnectionState) => void;
 

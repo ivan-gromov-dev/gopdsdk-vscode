@@ -46,7 +46,7 @@ export function registerDeviceWorkflow(context: vscode.ExtensionContext): void {
   const logs = new DeviceLogProvider();
   const status = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 89);
   const updateStatus = (state: DeviceConnectionState): void => {
-    const icon = state === "connected" ? "device-mobile" : state === "checking" ? "loading~spin" : state === "error" ? "error" : "debug-disconnect";
+    const icon = state === "connected" ? "device-mobile" : state === "disk" ? "database" : state === "checking" ? "loading~spin" : state === "error" ? "error" : "debug-disconnect";
     status.text = `$(${icon}) Playdate device: ${state}`;
     status.tooltip = state === "unchecked" ? "Connection is optional; click to check the physical Playdate USB connection" : `Last explicit connection check: ${state}`;
     status.command = "gopdsdk.checkDeviceConnection"; status.show();
@@ -97,8 +97,17 @@ export function registerDeviceWorkflow(context: vscode.ExtensionContext): void {
   };
   const showLog = async (command: "crashlog" | "errorlog", resource?: vscode.Uri): Promise<void> => {
     const result = await run(command, resource); if (!result?.log || result.failure) return;
+    const folder = folderFor(resource); if (folder) { deviceConnections.set(folder.uri.toString(), "disk"); updateStatus("disk"); }
     const document = await vscode.workspace.openTextDocument(logs.uri(result.log.kind, result.log.content));
     await vscode.window.showTextDocument(document, { preview: true });
+  };
+  const diskMode = async (operation: "mount" | "unmount", resource?: vscode.Uri): Promise<void> => {
+    const folder = folderFor(resource); if (!folder) { void vscode.window.showWarningMessage("Open a workspace folder containing a Playdate application first."); return; }
+    const key = folder.uri.toString(); deviceConnections.set(key, "checking"); updateStatus("checking");
+    const result = await run(`device disk ${operation}`, resource);
+    if (!result || result.failure) { const state: DeviceConnectionState = result?.failure?.category === "not-connected" ? "disconnected" : "error"; deviceConnections.set(key, state); updateStatus(state); return; }
+    const state: DeviceConnectionState = result.mode === "disk" ? "disk" : "connected"; deviceConnections.set(key, state); updateStatus(state);
+    void vscode.window.showInformationMessage(operation === "mount" ? `Playdate Data Disk mounted at ${result.mountPath}.` : "Playdate safely ejected and connected over USB.");
   };
   context.subscriptions.push(status, deviceConnections.subscribe((key, state) => { if (folderFor()?.uri.toString() === key) updateStatus(state); }),
     vscode.window.onDidChangeActiveTextEditor(() => { const folder = folderFor(); updateStatus(folder ? deviceConnections.get(folder.uri.toString()) : "unchecked"); }),
@@ -106,6 +115,8 @@ export function registerDeviceWorkflow(context: vscode.ExtensionContext): void {
     vscode.commands.registerCommand("gopdsdk.checkDeviceConnection", check),
     vscode.commands.registerCommand("gopdsdk.buildDevice", (resource?: vscode.Uri) => workflow("build device", resource)),
     vscode.commands.registerCommand("gopdsdk.runDevice", (resource?: vscode.Uri) => workflow("run device", resource)),
+    vscode.commands.registerCommand("gopdsdk.mountDeviceDisk", (resource?: vscode.Uri) => diskMode("mount", resource)),
+    vscode.commands.registerCommand("gopdsdk.unmountDeviceDisk", (resource?: vscode.Uri) => diskMode("unmount", resource)),
     vscode.commands.registerCommand("gopdsdk.showCrashLog", (resource?: vscode.Uri) => showLog("crashlog", resource)),
     vscode.commands.registerCommand("gopdsdk.showErrorLog", (resource?: vscode.Uri) => showLog("errorlog", resource)));
 }

@@ -32,6 +32,8 @@ const actions: WorkspaceNode[] = [
   { label: "Check Device Connection", icon: "plug", command: "gopdsdk.checkDeviceConnection", group: "actions" },
   { label: "Build for Device", icon: "tools", command: "gopdsdk.buildDevice", group: "actions" },
   { label: "Build and Run on Device", icon: "device-mobile", command: "gopdsdk.runDevice", group: "actions" },
+  { label: "Mount Device Data Disk", icon: "database", command: "gopdsdk.mountDeviceDisk", group: "actions" },
+  { label: "Safely Eject Device Data Disk", icon: "eject", command: "gopdsdk.unmountDeviceDisk", group: "actions" },
   { label: "Open Device Crash Log", icon: "error", command: "gopdsdk.showCrashLog", group: "logs" },
   { label: "Open Device Error Log", icon: "output", command: "gopdsdk.showErrorLog", group: "logs" },
 ];

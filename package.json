@@ -2,7 +2,7 @@
   "name": "gopdsdk",
   "displayName": "gopdsdk",
   "description": "Playdate diagnostics and safe fixes powered by gopdsdk.",
-  "version": "1.0.2",
+  "version": "1.1.0",
   "publisher": "gopdsdk",
   "license": "SEE LICENSE IN LICENSE",
   "icon": "assets/icon.png",
@@ -92,6 +92,16 @@
       {
         "command": "gopdsdk.showCrashLog",
         "title": "Open Device Crash Log",
+        "category": "gopdsdk"
+      },
+      {
+        "command": "gopdsdk.mountDeviceDisk",
+        "title": "Mount Device Data Disk",
+        "category": "gopdsdk"
+      },
+      {
+        "command": "gopdsdk.unmountDeviceDisk",
+        "title": "Safely Eject Device Data Disk",
         "category": "gopdsdk"
       },
       {

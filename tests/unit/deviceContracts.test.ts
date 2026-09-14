@@ -9,6 +9,13 @@ test("constructs device commands without shell strings", () => {
   assert.deepEqual(deviceArguments("run device"), ["run", "device", "--format", "json", "--progress", "."]);
   assert.deepEqual(deviceArguments("probe connection"), ["probe", "connection", "--format", "json"]);
   assert.deepEqual(deviceArguments("crashlog"), ["crashlog", "--format", "json", "--progress"]);
+  assert.deepEqual(deviceArguments("device disk mount"), ["device", "disk", "mount", "--format", "json", "--progress"]);
+  assert.deepEqual(deviceArguments("device disk unmount"), ["device", "disk", "unmount", "--format", "json", "--progress"]);
+});
+
+test("decodes device disk mode transitions", () => {
+  assert.equal(decodeDeviceResult(envelope("device disk mount", { schema: "gopdsdk-device-disk/v1", mode: "disk", mountPath: "F:/" }), "device disk mount").mode, "disk");
+  assert.equal(decodeDeviceResult(envelope("device disk unmount", { schema: "gopdsdk-device-disk/v1", mode: "connected" }), "device disk unmount").mode, "connected");
 });
 
 test("decodes USB connection without confusing discovery with connectivity", () => {
