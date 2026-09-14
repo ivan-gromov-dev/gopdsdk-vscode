@@ -110,7 +110,7 @@ platforms; timings are regression guards, not SDK or hardware performance claims
 | -------------------------------------- | --------- | -------------------------------------------------------------------------------------------------------------------------------- |
 | `gopdsdk.executable`                   | empty     | Optional executable name on `PATH` or path. An empty value searches each workspace's `tools` and `bin` directories, then `PATH`. |
 | `gopdsdk.arguments`                    | `["lsp"]` | Language-server arguments.                                                                                                       |
-| `gopdsdk.target`                       | `both`    | Target (`shared`, `simulator`, `device`, or `both`); platform targets always include shared SDK-contract analysis.                |
+| `gopdsdk.target`                       | `both`    | Target (`simulator`, `device`, or `both`); every editor target includes shared SDK-contract analysis.                            |
 | `gopdsdk.gopdsdkFloor`                 | empty     | Oldest supported gopdsdk release.                                                                                                |
 | `gopdsdk.playdateSDK`                  | empty     | Official Playdate SDK compatibility version.                                                                                     |
 | `gopdsdk.rules` / `gopdsdk.categories` | `[]`      | Optional rule or category selection.                                                                                             |

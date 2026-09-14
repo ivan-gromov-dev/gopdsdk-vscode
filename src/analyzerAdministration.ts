@@ -67,7 +67,7 @@ async function synchronizeLSPConfiguration(folder: vscode.WorkspaceFolder, value
 
 async function configureAnalyzer(resource?: vscode.Uri): Promise<void> {
   const folder = folderOrWarn(resource); if (!folder) return;
-  const target = await vscode.window.showQuickPick(["both", "simulator", "device", "shared"], { placeHolder: "Select analysis target" }); if (!target) return;
+  const target = await vscode.window.showQuickPick(["both", "simulator", "device"], { placeHolder: "Select analysis target" }); if (!target) return;
   const profile = await vscode.window.showQuickPick(["default", "experimental", "deep"], { placeHolder: "Select analyzer profile" }) as AnalyzerProfile | undefined; if (!profile) return;
   const current = await readRepositoryConfiguration(folder); const version = current.document.version;
   current.value.target = target; current.value.profile = profile;
