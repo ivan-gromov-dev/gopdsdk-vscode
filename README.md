@@ -2,7 +2,7 @@
 
 Thin Visual Studio Code integration for `gopdsdk`. The extension runs
 `gopdsdk lsp` beside `gopls`, presents Playdate-specific diagnostics and safe
-quick fixes, and drives Simulator builds and launches through the CLI.
+quick fixes, and drives Simulator and physical-device workflows through the CLI.
 
 `gopls` continues to own completion, navigation, formatting, refactoring, and
 general Go diagnostics. This extension contains no analysis rules: `gopdsdk`
@@ -22,6 +22,9 @@ Project Health report with remediation, a guided project-creation flow, and
 analyzer administration without hand-editing configuration. The analyzer UX
 uses the installed binary's exact-version catalog and structured check and
 baseline contracts; the extension does not carry a second rule catalog.
+Device commands verify the USB connection separately from tool discovery,
+build/install/launch through structured CLI results, and open crash and error
+logs as read-only virtual documents only when explicitly requested.
 Before startup it discovers the executable, performs a bounded LSP handshake,
 and requires analyzer protocol `v1` with diagnostics and safe-fix capabilities.
 Analyzer-provided edit-only quick fixes are accepted; command-based or unrelated
@@ -36,6 +39,8 @@ actions are rejected by the client. Release automation is tracked in
 - for the 0.4 analyzer-administration commands, a `gopdsdk` build providing the
   v1 rule-catalog, structured-check, and baseline-administration contracts
   documented below (these contracts postdate the `gopdsdk` v1.1.0 tag);
+- for the 0.5 device commands, a `gopdsdk` build providing the v1 device build,
+  run, connection-probe, progress, and device-log contracts;
 - the VS Code Go extension for normal Go language features.
 
 ## Development
@@ -60,6 +65,11 @@ Commands:
 - `gopdsdk: Show Language Server Output`
 - `gopdsdk: Build for Simulator`
 - `gopdsdk: Build and Run in Simulator`
+- `gopdsdk: Check Device Connection`
+- `gopdsdk: Build for Device`
+- `gopdsdk: Build, Install, and Run on Device`
+- `gopdsdk: Open Device Crash Log`
+- `gopdsdk: Open Device Error Log`
 - `gopdsdk: Select Analysis Target`
 - `gopdsdk: Show Project Health`
 - `gopdsdk: Fix Project Health Issue`

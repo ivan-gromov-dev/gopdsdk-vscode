@@ -2,7 +2,7 @@
   "name": "gopdsdk",
   "displayName": "gopdsdk",
   "description": "Playdate diagnostics and safe fixes powered by gopdsdk.",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "publisher": "gopdsdk",
   "license": "SEE LICENSE IN LICENSE",
   "icon": "assets/icon.png",
@@ -24,9 +24,7 @@
     "vscode": "^1.95.0"
   },
   "activationEvents": [
-    "onLanguage:go",
-    "onView:gopdsdk.playdate",
-    "onTaskType:gopdsdk"
+    "onLanguage:go"
   ],
   "categories": [
     "Linters",
@@ -74,6 +72,31 @@
       {
         "command": "gopdsdk.runSimulator",
         "title": "Build and Run in Simulator",
+        "category": "gopdsdk"
+      },
+      {
+        "command": "gopdsdk.checkDeviceConnection",
+        "title": "Check Device Connection",
+        "category": "gopdsdk"
+      },
+      {
+        "command": "gopdsdk.buildDevice",
+        "title": "Build for Device",
+        "category": "gopdsdk"
+      },
+      {
+        "command": "gopdsdk.runDevice",
+        "title": "Build, Install, and Run on Device",
+        "category": "gopdsdk"
+      },
+      {
+        "command": "gopdsdk.showCrashLog",
+        "title": "Open Device Crash Log",
+        "category": "gopdsdk"
+      },
+      {
+        "command": "gopdsdk.showErrorLog",
+        "title": "Open Device Error Log",
         "category": "gopdsdk"
       },
       {
@@ -167,7 +190,7 @@
     },
     "views": {
       "gopdsdk": [
-        { "id": "gopdsdk.playdate", "name": "Simulator" }
+        { "id": "gopdsdk.playdate", "name": "Simulator", "icon": "assets/playdate.svg" }
       ]
     },
     "configuration": {
