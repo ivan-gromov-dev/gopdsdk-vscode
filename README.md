@@ -17,7 +17,8 @@ for Go workspaces and provides diagnostic refresh, restart, rule-help,
 troubleshooting, and Simulator workflow commands. Cancellable `gopdsdk` tasks
 show structured build progress; compiler source locations are published in the
 Problems view. The status bar shows the active analysis target, and the
-Playdate activity view provides focused build and run actions.
+Playdate activity view provides focused build and run actions, a structured
+Project Health report with remediation, and a guided project-creation flow.
 Before startup it discovers the executable, performs a bounded LSP handshake,
 and requires analyzer protocol `v1` with diagnostics and safe-fix capabilities.
 Analyzer-provided edit-only quick fixes are accepted; command-based or unrelated
@@ -54,6 +55,9 @@ Commands:
 - `gopdsdk: Build for Simulator`
 - `gopdsdk: Build and Run in Simulator`
 - `gopdsdk: Select Analysis Target`
+- `gopdsdk: Show Project Health`
+- `gopdsdk: Fix Project Health Issue`
+- `gopdsdk: Create Playdate Project`
 
 Build a local VSIX with `npm run package`.
 

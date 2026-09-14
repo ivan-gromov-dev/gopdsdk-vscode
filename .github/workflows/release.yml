@@ -19,6 +19,7 @@ permissions:
 
 jobs:
   package:
+    environment: vscode-marketplace
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6

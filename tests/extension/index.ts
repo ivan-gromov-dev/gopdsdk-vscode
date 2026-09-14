@@ -51,7 +51,7 @@ export async function run(): Promise<void> {
   await vscode.commands.executeCommand("gopdsdk.refreshDiagnostics");
 
   const commands = await vscode.commands.getCommands(true);
-  for (const command of ["gopdsdk.restartServer", "gopdsdk.refreshDiagnostics", "gopdsdk.showRuleHelp", "gopdsdk.troubleshoot", "gopdsdk.buildSimulator", "gopdsdk.runSimulator", "gopdsdk.selectTarget"]) {
+  for (const command of ["gopdsdk.restartServer", "gopdsdk.refreshDiagnostics", "gopdsdk.showRuleHelp", "gopdsdk.troubleshoot", "gopdsdk.buildSimulator", "gopdsdk.runSimulator", "gopdsdk.selectTarget", "gopdsdk.showProjectHealth", "gopdsdk.remediateProjectHealth", "gopdsdk.createProject"]) {
     assert.ok(commands.includes(command), `${command} is registered`);
   }
 

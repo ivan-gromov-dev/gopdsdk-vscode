@@ -148,7 +148,13 @@ export function registerSimulatorWorkflow(context: vscode.ExtensionContext): voi
   };
   const tree: vscode.TreeDataProvider<PlaydateItem> = {
     getTreeItem: (item) => item,
-    getChildren: () => [new PlaydateItem("Build for Simulator", "gopdsdk.buildSimulator", "tools"), new PlaydateItem("Build and Run in Simulator", "gopdsdk.runSimulator", "play")],
+    getChildren: () => [
+      new PlaydateItem("Project Health", "gopdsdk.showProjectHealth", "pulse"),
+      new PlaydateItem("Fix Project Health Issue", "gopdsdk.remediateProjectHealth", "wrench"),
+      new PlaydateItem("Create Playdate Project", "gopdsdk.createProject", "new-folder"),
+      new PlaydateItem("Build for Simulator", "gopdsdk.buildSimulator", "tools"),
+      new PlaydateItem("Build and Run in Simulator", "gopdsdk.runSimulator", "play"),
+    ],
   };
   context.subscriptions.push(
     diagnostics, status, vscode.tasks.registerTaskProvider(taskType, provider), vscode.window.registerTreeDataProvider("gopdsdk.playdate", tree),

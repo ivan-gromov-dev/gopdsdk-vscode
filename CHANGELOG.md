@@ -6,6 +6,11 @@ stable builds because the Marketplace does not accept SemVer pre-release labels.
 
 ## Unreleased
 
+## 0.3.0 — 2026-09-14
+
+- add a structured Project Health report, focused remediation, and a guided
+  `gopdsdk init` project-creation flow with post-open Simulator launch;
+
 ## 0.2.0 — 2026-09-14
 
 - always run shared SDK-contract diagnostics and expose only `simulator`,
