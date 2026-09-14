@@ -5,10 +5,9 @@ a release does not authorize a Marketplace upload.
 
 ## Version channels
 
-The Marketplace accepts only `major.minor.patch` extension versions. Use odd
-minor versions for pre-releases and even minor versions for stable releases, and
-never reuse a version between the two channels. Keep `preview: true` until stable
-publication is approved and verified.
+The Marketplace accepts only `major.minor.patch` extension versions. Never
+reuse a version between pre-release and stable channels. Use `preview: true`
+for pre-releases and `preview: false` for stable releases.
 
 ## Gates
 

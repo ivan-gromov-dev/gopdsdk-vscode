@@ -121,15 +121,16 @@ in the official Simulator on every claimed host platform.
 
 ## M7 — Project health and creation
 
-Status: planned.
+Status: complete; cross-platform Extension Host confirmation and external
+SDK, Simulator, USB, and device evidence remain.
 
-- present gopdsdk, analyzer-protocol, Playdate SDK, Simulator, device-toolchain,
+- [x] present gopdsdk, analyzer-protocol, Playdate SDK, Simulator, device-toolchain,
   USB connection, module, manifest, and analyzer-configuration readiness in one
   Project Health surface;
-- attach focused remediation actions to failed checks;
-- create a new game through a guided wrapper around `gopdsdk init`, then open
+- [x] attach focused remediation actions to failed checks;
+- [x] create a new game through a guided wrapper around `gopdsdk init`, then open
   the generated workspace and offer its first Simulator run;
-- keep raw troubleshooting output available for support.
+- [x] keep raw troubleshooting output available for support.
 
 The health view consumes `gopdsdk doctor` and the relevant `gopdsdk probe`
 commands. A stable structured doctor/probe report is required before the view

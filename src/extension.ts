@@ -6,6 +6,7 @@ import { discoverExecutable, ExecutableNotFoundError } from "./executable";
 import { SerialTaskQueue } from "./lifecycle";
 import { probeServer, ServerProbeError } from "./probe";
 import { registerSimulatorWorkflow } from "./simulator";
+import { registerProjectWorkflow } from "./project";
 
 const clients = new Map<string, LanguageClient>();
 let output: vscode.OutputChannel | undefined;
@@ -173,6 +174,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
   fileWatcher = vscode.workspace.createFileSystemWatcher("**/{go.mod,pdxinfo}");
   context.subscriptions.push(output, fileWatcher);
   registerSimulatorWorkflow(context);
+  registerProjectWorkflow(context);
   context.subscriptions.push(
     vscode.commands.registerCommand("gopdsdk.restartServer", () => scheduleLifecycle(restartClient)),
     vscode.commands.registerCommand("gopdsdk.refreshDiagnostics", () => scheduleLifecycle(refreshDiagnostics)),

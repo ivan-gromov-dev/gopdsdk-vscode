@@ -2,7 +2,7 @@
   "name": "gopdsdk",
   "displayName": "gopdsdk",
   "description": "Playdate diagnostics and safe fixes powered by gopdsdk.",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "publisher": "gopdsdk",
   "license": "SEE LICENSE IN LICENSE",
   "icon": "assets/icon.png",
@@ -79,6 +79,21 @@
       {
         "command": "gopdsdk.selectTarget",
         "title": "Select Analysis Target",
+        "category": "gopdsdk"
+      },
+      {
+        "command": "gopdsdk.showProjectHealth",
+        "title": "Show Project Health",
+        "category": "gopdsdk"
+      },
+      {
+        "command": "gopdsdk.remediateProjectHealth",
+        "title": "Fix Project Health Issue",
+        "category": "gopdsdk"
+      },
+      {
+        "command": "gopdsdk.createProject",
+        "title": "Create Playdate Project",
         "category": "gopdsdk"
       }
     ],
