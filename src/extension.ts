@@ -9,6 +9,7 @@ import { registerSimulatorWorkflow } from "./simulator";
 import { registerProjectWorkflow } from "./project";
 import { registerAnalyzerAdministration } from "./analyzerAdministration";
 import { registerDeviceWorkflow } from "./device";
+import { registerWorkspaceView } from "./workspaceView";
 
 const clients = new Map<string, LanguageClient>();
 let output: vscode.OutputChannel | undefined;
@@ -179,6 +180,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
   registerProjectWorkflow(context);
   registerAnalyzerAdministration(context);
   registerDeviceWorkflow(context);
+  registerWorkspaceView(context);
   context.subscriptions.push(
     vscode.commands.registerCommand("gopdsdk.restartServer", () => scheduleLifecycle(restartClient)),
     vscode.commands.registerCommand("gopdsdk.refreshDiagnostics", () => scheduleLifecycle(refreshDiagnostics)),

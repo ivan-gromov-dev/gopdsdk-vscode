@@ -2,7 +2,7 @@
   "name": "gopdsdk",
   "displayName": "gopdsdk",
   "description": "Playdate diagnostics and safe fixes powered by gopdsdk.",
-  "version": "0.5.0",
+  "version": "1.0.0",
   "publisher": "gopdsdk",
   "license": "SEE LICENSE IN LICENSE",
   "icon": "assets/icon.png",
@@ -158,6 +158,16 @@
         "command": "gopdsdk.compareTargets",
         "title": "Compare Shared, Simulator, and Device Findings",
         "category": "gopdsdk"
+      },
+      {
+        "command": "gopdsdk.refreshWorkspaceView",
+        "title": "Refresh Playdate Workspace View",
+        "category": "gopdsdk"
+      },
+      {
+        "command": "gopdsdk.selectWorkspace",
+        "title": "Select Playdate Workspace",
+        "category": "gopdsdk"
       }
     ],
     "menus": {
@@ -190,7 +200,7 @@
     },
     "views": {
       "gopdsdk": [
-        { "id": "gopdsdk.playdate", "name": "Simulator", "icon": "assets/playdate.svg" }
+        { "id": "gopdsdk.playdate", "name": "Workspace", "icon": "assets/playdate.svg" }
       ]
     },
     "configuration": {

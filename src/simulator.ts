@@ -121,14 +121,6 @@ class WorkflowTaskProvider implements vscode.TaskProvider {
   }
 }
 
-class PlaydateItem extends vscode.TreeItem {
-  constructor(label: string, command: string, icon: string) {
-    super(label, vscode.TreeItemCollapsibleState.None);
-    this.command = { command, title: label };
-    this.iconPath = new vscode.ThemeIcon(icon);
-  }
-}
-
 export function registerSimulatorWorkflow(context: vscode.ExtensionContext): void {
   const diagnostics = vscode.languages.createDiagnosticCollection("gopdsdk-build");
   const provider = new WorkflowTaskProvider(diagnostics);
@@ -146,26 +138,8 @@ export function registerSimulatorWorkflow(context: vscode.ExtensionContext): voi
     if (!folder) { void vscode.window.showWarningMessage("Open a workspace folder containing a Playdate application first."); return; }
     await vscode.tasks.executeTask(provider.task(folder, command));
   };
-  const tree: vscode.TreeDataProvider<PlaydateItem> = {
-    getTreeItem: (item) => item,
-    getChildren: () => [
-      new PlaydateItem("Project Health", "gopdsdk.showProjectHealth", "pulse"),
-      new PlaydateItem("Fix Project Health Issue", "gopdsdk.remediateProjectHealth", "wrench"),
-      new PlaydateItem("Create Playdate Project", "gopdsdk.createProject", "new-folder"),
-      new PlaydateItem("Configure Analyzer", "gopdsdk.configureAnalyzer", "settings-gear"),
-      new PlaydateItem("Browse Analyzer Rules", "gopdsdk.browseRules", "list-tree"),
-      new PlaydateItem("Compare Analysis Targets", "gopdsdk.compareTargets", "diff"),
-      new PlaydateItem("Build for Simulator", "gopdsdk.buildSimulator", "tools"),
-      new PlaydateItem("Build and Run in Simulator", "gopdsdk.runSimulator", "play"),
-      new PlaydateItem("Check Device Connection", "gopdsdk.checkDeviceConnection", "plug"),
-      new PlaydateItem("Build for Device", "gopdsdk.buildDevice", "tools"),
-      new PlaydateItem("Build and Run on Device", "gopdsdk.runDevice", "device-mobile"),
-      new PlaydateItem("Open Device Crash Log", "gopdsdk.showCrashLog", "error"),
-      new PlaydateItem("Open Device Error Log", "gopdsdk.showErrorLog", "output"),
-    ],
-  };
   context.subscriptions.push(
-    diagnostics, status, vscode.tasks.registerTaskProvider(taskType, provider), vscode.window.registerTreeDataProvider("gopdsdk.playdate", tree),
+    diagnostics, status, vscode.tasks.registerTaskProvider(taskType, provider),
     vscode.commands.registerCommand("gopdsdk.buildSimulator", (resource?: vscode.Uri) => runTask("build", resource)),
     vscode.commands.registerCommand("gopdsdk.runSimulator", (resource?: vscode.Uri) => runTask("run", resource)),
     vscode.commands.registerCommand("gopdsdk.selectTarget", async () => {

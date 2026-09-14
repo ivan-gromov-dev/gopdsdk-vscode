@@ -6,6 +6,17 @@ stable builds because the Marketplace does not accept SemVer pre-release labels.
 
 ## Unreleased
 
+## 1.0.0 — 2026-09-14
+
+- replace the static Playdate action list with an accessible workspace summary
+  for the selected root, target, compatible analyzer protocol, Playdate SDK,
+  project health, explicit USB connection, and Problems-view diagnostic counts;
+- add explicit refresh and multi-root selection while retaining focused
+  Simulator, device, analyzer, health, and user-requested log actions;
+- add unit coverage for empty, loading, ready, and error states plus action
+  routing, and Extension Host registration coverage for the new commands;
+  fixture evidence does not establish SDK, Simulator, USB, or device readiness.
+
 ## 0.5.0 — 2026-09-14
 
 - add an explicit USB device-connection status and cancellable device build,
