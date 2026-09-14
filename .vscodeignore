@@ -11,6 +11,7 @@ dist/executable.js
 assets/publisher-logo.png
 node_modules/**
 node_modules/.cache/**
+.npm-cache/**
 tsconfig.json
 tsconfig.tests.json
 ROADMAP.md
