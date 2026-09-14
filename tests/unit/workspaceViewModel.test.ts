@@ -16,3 +16,10 @@ test("projects workspace state and routes every stable action", () => {
     assert.ok(nodes.some((item) => item.command === command), command);
   }
 });
+
+test("renders optional device connection states without failing workspace health", () => {
+  for (const state of ["unchecked", "checking", "disconnected", "error"] as const) {
+    const device = workspaceNodes({ state: "ready", folder: "game", health: "toolchain installed", device: state }).find((item) => item.label === "Device");
+    assert.equal(device?.description, state);
+  }
+});

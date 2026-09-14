@@ -18,13 +18,15 @@ troubleshooting, and Simulator workflow commands. Cancellable `gopdsdk` tasks
 show structured build progress; compiler source locations are published in the
 Problems view. The status bar shows the active analysis target, and the
 Playdate activity view summarizes the selected workspace root, target,
-compatible analyzer protocol, SDK, health and explicit USB state, and gopdsdk
+compatible analyzer protocol, installed toolchain health, optional last-checked
+USB state, and gopdsdk
 diagnostic counts while providing focused build, run, log, health, project, and
 analyzer actions. It supports explicit multi-root selection and refresh. The
 analyzer UX
 uses the installed binary's exact-version catalog and structured check and
 baseline contracts; the extension does not carry a second rule catalog.
-Device commands verify the USB connection separately from tool discovery,
+Workspace and Project Health refresh never require or automatically probe a
+physical device. Device commands verify USB separately from tool discovery,
 build/install/launch through structured CLI results, and open crash and error
 logs as read-only virtual documents only when explicitly requested.
 Before startup it discovers the executable, performs a bounded LSP handshake,

@@ -16,6 +16,20 @@ export interface DoctorReport {
   checks: HealthCheck[];
 }
 
+const requiredTools = ["go", "pdc", "simulator", "tinygo", "arm-none-eabi-gcc", "pdutil"];
+
+export function missingToolchain(report: DoctorReport): string[] {
+  const present = new Set(report.tools.map((tool) => tool.name));
+  const missing = requiredTools.filter((name) => !present.has(name));
+  if (!report.tools.some((tool) => tool.name === "cc" || tool.name === "gcc")) missing.push("C compiler");
+  return missing;
+}
+
+export function toolchainSummary(report: DoctorReport): string {
+  const missing = missingToolchain(report);
+  return missing.length === 0 && report.sdk ? "toolchain installed" : `${missing.length + (report.sdk ? 0 : 1)} toolchain component(s) missing`;
+}
+
 function record(value: unknown): Record<string, unknown> | undefined {
   return typeof value === "object" && value !== null ? value as Record<string, unknown> : undefined;
 }
@@ -51,23 +65,15 @@ export function decodeDoctor(text: string): DoctorReport {
   return { host: value.host, sdk: record(value.sdk) as DoctorReport["sdk"], tools: value.tools as DoctorReport["tools"], checks };
 }
 
-export function decodeConnectionProbe(text: string): HealthCheck {
-  const value = decodeToolingResult(text, "probe");
-  if (value.schema !== "gopdsdk-probe/v1" || value.probe !== "connection" || typeof value.discovered !== "boolean" || typeof value.ready !== "boolean") {
-    throw new Error("gopdsdk connection probe returned an unsupported report.");
-  }
-  return {
-    id: "device-connection", discovered: value.discovered, status: value.ready ? "ready" : value.discovered ? "unverified" : "missing",
-    evidenceLevel: typeof value.evidenceLevel === "string" ? value.evidenceLevel : "discovery",
-  };
-}
-
 const icons: Record<HealthStatus, string> = { ready: "✅", missing: "❌", incompatible: "❌", unverified: "⚠️" };
 
-export function healthMarkdown(report: DoctorReport, connection: HealthCheck, files: Record<string, boolean>, executable: string, analyzerProtocol: string): string {
-  const checks = [...report.checks, connection];
+export function healthMarkdown(report: DoctorReport, connection: "unchecked" | "checking" | "connected" | "disconnected" | "error", files: Record<string, boolean>, executable: string, analyzerProtocol: string): string {
+  const checks = report.checks.filter((check) => check.id !== "device-deploy");
+  const missing = missingToolchain(report);
   const lines = ["# gopdsdk Project Health", "", `Host: \`${report.host}\``, `gopdsdk: \`${executable}\``, `Analyzer protocol: \`${analyzerProtocol}\``,
-    `Playdate SDK: ${report.sdk ? `\`${report.sdk.version}\`` : "not discovered"}`, "", "## Readiness", ""];
+    `Playdate SDK: ${report.sdk ? `\`${report.sdk.version}\`` : "not discovered"}`, "", "## Required toolchain", "",
+    missing.length === 0 && report.sdk ? "- ✅ installed" : `- ❌ missing: ${[...missing, ...(!report.sdk ? ["Playdate SDK"] : [])].join(", ")}`,
+    "", "## Optional physical connection", "", `- ${connection === "connected" ? "✅" : connection === "error" ? "❌" : "⚪"} **device-connection** — ${connection}; run _Check Device Connection_ after connecting and unlocking a Playdate`, "", "## Discovery and optional probe evidence", ""];
   for (const check of checks) lines.push(`- ${icons[check.status]} **${check.id}** — ${check.status} (${check.evidenceLevel})${check.failureCategory ? `; ${check.failureCategory}` : ""}`);
   lines.push("", "## Workspace contracts", "");
   for (const [name, present] of Object.entries(files)) lines.push(`- ${present ? "✅" : "⚪"} \`${name}\` — ${present ? "present" : "not present"}`);

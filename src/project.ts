@@ -3,8 +3,9 @@ import * as fs from "node:fs/promises";
 import * as path from "node:path";
 import * as vscode from "vscode";
 import { discoverExecutable } from "./executable";
-import { decodeConnectionProbe, decodeDoctor, HealthCheck, healthMarkdown, initArguments } from "./health";
+import { decodeDoctor, HealthCheck, healthMarkdown, initArguments } from "./health";
 import { probeServer } from "./probe";
+import { deviceConnections } from "./deviceConnectionState";
 
 const pendingProjectKey = "gopdsdk.pendingCreatedProject";
 let remediationChecks: HealthCheck[] = [];
@@ -34,15 +35,14 @@ async function showHealth(): Promise<void> {
   await vscode.window.withProgress({ location: vscode.ProgressLocation.Notification, title: "Checking gopdsdk project health", cancellable: true }, async (_, token) => {
     try {
       const command = await executable(root);
-      const [doctorText, connectionText, server] = await Promise.all([
-        run(command, ["doctor", "--format", "json", "--probe"], root.uri.fsPath, token),
-        run(command, ["probe", "connection", "--format", "json"], root.uri.fsPath, token),
+      const [doctorText, server] = await Promise.all([
+        run(command, ["doctor", "--format", "json"], root.uri.fsPath, token),
         probeServer({ command, args: vscode.workspace.getConfiguration("gopdsdk", root.uri).get<string[]>("arguments", ["lsp"]), cwd: root.uri.fsPath }),
       ]);
       const entries = await Promise.all(["go.mod", "pdxinfo", ".gopdsdk-check.json"].map(async (name) => [name, await fs.stat(path.join(root.uri.fsPath, name)).then((item) => item.isFile(), () => false)] as const));
-      const report = decodeDoctor(doctorText); const connection = decodeConnectionProbe(connectionText);
-      remediationChecks = [...report.checks, connection].filter((check) => check.status !== "ready");
-      const document = await vscode.workspace.openTextDocument({ language: "markdown", content: healthMarkdown(report, connection, Object.fromEntries(entries), path.basename(command), server.analyzerProtocol) });
+      const report = decodeDoctor(doctorText);
+      remediationChecks = report.checks.filter((check) => check.status === "missing" || check.status === "incompatible");
+      const document = await vscode.workspace.openTextDocument({ language: "markdown", content: healthMarkdown(report, deviceConnections.get(root.uri.toString()), Object.fromEntries(entries), path.basename(command), server.analyzerProtocol) });
       await vscode.window.showTextDocument(document, { preview: true });
     } catch (error) { if (!token.isCancellationRequested) void vscode.window.showErrorMessage(error instanceof Error ? error.message : "Project health check failed."); }
   });
